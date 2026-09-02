@@ -1,0 +1,9 @@
+<Project>
+  <!-- This Rust-only target has no managed projects; keep the file for foundation parity. -->
+  <PropertyGroup>
+    <RepositoryName>sts2-game-core</RepositoryName>
+    <RepositoryLanguage>Rust</RepositoryLanguage>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

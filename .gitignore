@@ -1,0 +1,29 @@
+# Rust and future build output
+target/
+**/*.rs.bk
+**/bin/
+**/obj/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Test and analysis output
+.coverage
+coverage/
+dist/
+out/
+
+# Proprietary or machine-local host material; never commit it
+.tools/
+local-host/
+*.dll
+*.pdb
+*.save
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
