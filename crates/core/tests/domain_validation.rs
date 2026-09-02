@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use sts2_game_core::{
-    Action, Generation, Identity, Phase, Request, State, ValidatedAction, ValidationError, validate,
+    Action, Generation, Identity, Phase, Request, State, ValidatedAction, ValidationError,
+    validate, verify_poc_artifact,
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -176,5 +177,54 @@ fn golden_vectors_are_reproducible_across_repeated_evaluation() -> Result<(), &'
             .collect();
         assert_eq!(actual, expected);
     }
+    Ok(())
+}
+
+#[test]
+fn poc_valid_action_changes_state_once_and_invalid_action_does_not() -> Result<(), &'static str> {
+    verify_poc_artifact().map_err(|_| "protocol artifact is not valid")?;
+    let state = State::new(identity(1)?, Generation::new(0), Phase::Open, 3);
+    let valid = Request::new(
+        identity(1)?,
+        Generation::new(0),
+        Action::UseBudget { units: 1 },
+    );
+    let accepted = validate(&state, &valid).map_err(|_| "valid POC action was rejected")?;
+    let changed = state
+        .apply(&accepted)
+        .map_err(|_| "valid POC action did not apply")?;
+    assert_eq!(changed.generation(), Generation::new(1));
+    assert_eq!(changed.available_units(), 2);
+    assert_eq!(changed.settled_effects(), 1);
+
+    let invalid = Request::new(
+        identity(1)?,
+        changed.generation(),
+        Action::UseBudget { units: 0 },
+    );
+    assert_eq!(
+        validate(&changed, &invalid),
+        Err(ValidationError::ZeroUnits)
+    );
+    assert_eq!(changed.available_units(), 2);
+    assert_eq!(changed.settled_effects(), 1);
+    Ok(())
+}
+
+#[test]
+fn poc_stale_generation_is_rejected_before_state_application() -> Result<(), &'static str> {
+    let state = State::new(identity(1)?, Generation::new(1), Phase::Open, 2);
+    let stale_request = Request::new(
+        identity(1)?,
+        Generation::new(0),
+        Action::UseBudget { units: 1 },
+    );
+    assert_eq!(
+        validate(&state, &stale_request),
+        Err(ValidationError::StaleGeneration {
+            expected: Generation::new(0),
+            actual: Generation::new(1),
+        })
+    );
     Ok(())
 }

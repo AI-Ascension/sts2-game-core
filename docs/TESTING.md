@@ -12,10 +12,18 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-targets --all-features
 ```
 
-The workspace now contains the governance checker and the initialized pure `crates/core` package.
-The core tests cover valid, invalid, actor-mismatch, stale-generation, checked-generation, and
+The workspace now contains the governance checker, the initialized pure `crates/core` package, and
+the local release-like POC artifact verifier. The core tests cover valid, invalid, actor-mismatch,
+stale-generation, checked-generation, one-time state application, artifact identity, and
 reproducibility behavior. Passing these commands proves this semantic seam and checker only; it does
 not prove host, transport, provider, or runtime behavior.
+
+## POC conformance
+
+`poc_valid_action_changes_state_once_and_invalid_action_does_not` proves the semantic oracle used by
+the mod double: initial generation 0/units 3 becomes generation 1/units 2/effects 1, while zero units
+is rejected and leaves the snapshot unchanged. The artifact check is data-only and does not import
+protocol implementation internals.
 
 ## Future core test layers
 

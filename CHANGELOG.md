@@ -13,10 +13,13 @@ Semantic Versioning once versioned releases begin.
 - A non-empty `sts2-game-core` package with typed identity, generation, state, action, and pure
   validation seams plus deterministic valid/invalid/stale/reproducibility tests.
 - Ownership and dependency decisions for the host-independent core boundary and accepted sixth target.
+- Deterministic `use_budget` application, settled-effect witness state, and verification of the copied
+  release-like `sts2-protocol/poc-v1` artifact.
 
 ### Changed
 
-- Nothing yet.
+- The semantic seam now demonstrates one checked state transition while preserving the host-free
+  boundary; no protocol implementation path dependency was added.
 
 ### Deprecated
 

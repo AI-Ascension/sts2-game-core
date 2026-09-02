@@ -6,6 +6,7 @@
 sts2-game-core/
 ├── .github/                    # bounded read-only CI and dependency automation
 ├── crates/core/                # initialized pure semantic product crate and deterministic tests
+├── protocol-artifact/poc-v1/   # copied release-like protocol data, not implementation code
 ├── schemas/domain/             # reserved owner-local semantic fixtures/shapes
 ├── conformance/                # reserved project-owned contract cases
 ├── docs/                       # target policy, architecture, and decisions
@@ -35,6 +36,7 @@ consumers, independent versioning, language/transport neutrality, provenance, an
 ## Provenance and generated content
 
 This target is authored using the planning/project-policy standards and its own local repository
-structure. It contains no copied product source,
-game assembly, save, credential, or generated artifact. Future generated schemas or fixtures must
+structure. Its only cross-target material is the inert copied `poc-v1` artifact, with source and
+digest recorded in its manifest. It contains no copied product source, game assembly, save, credential,
+or generated build output. Future generated schemas or fixtures must
 record their source, generator, hash, license, and exact-path policy exception when necessary.
