@@ -14,8 +14,8 @@
 >
 > AI-Ascension is an independent project. It is not affiliated with or endorsed by Mega Crit or Valve and grants no rights to game files, assets, or marks.
 
-Status: Wave 2 codebase initialization. This directory is intentionally not initialized as a Git
-repository and now contains one small, pure Rust core package plus its target-local policy tool.
+Status: active Git-backed target repository. It contains one small, pure Rust core package plus its
+target-local policy tool.
 
 ## Owner and consumers
 
@@ -54,8 +54,8 @@ be project-owned, deterministic, exact-versioned, and clearly labeled `confirmed
 implementation's source.
 
 Reserved areas are `schemas/domain`, `conformance`, the root `tests` directory, and `tools`.
-They are not permission to create empty placeholder crates. The staged scope is recorded in
-the [investigation prompt](../planning/prompt-corpus/staged/sts2-game-core-INVESTIGATION_PROMPT.md).
+They are not permission to create empty placeholder crates. The current target shape is documented in
+the [repository layout](docs/REPOSITORY_LAYOUT.md).
 
 ## Local validation
 
