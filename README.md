@@ -1,4 +1,18 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/AI-Ascension/.github/main/profile/assets/banner-dark.svg">
+  <img alt="AI-Ascension — Inspect how AI requests to a game get fenced, one Rust contract at a time. Runtime: unverified. Deterministic tests: confirmed." src="https://raw.githubusercontent.com/AI-Ascension/.github/main/profile/assets/banner-light.svg" width="100%">
+</picture>
+
 # sts2-game-core
+
+> **AI-Ascension · domain core (beside the ascent)** — Host-independent Rust domain core: typed game-state values, pure validation, and policy rules with no I/O.
+>
+> **Status:** deterministic in-memory tests `confirmed` at the pinned commit · runtime, host, and game compatibility `unverified` · nothing is live.
+> **Proof:** [45-second browser replay](https://ai-ascension.github.io/proof.html) · [Evidence ledger](https://ai-ascension.github.io/evidence.html) · [This repository on the map](https://ai-ascension.github.io/repositories.html#sts2-game-core)
+> **Owner:** The core maintainers own host-independent STS2 domain state, action descriptions, identity and generation values, validation, typed domain errors, and deterministic policy.
+> **Contribute:** [Organization guide](https://github.com/AI-Ascension/.github/blob/main/CONTRIBUTING.md) · [First tasks](https://ai-ascension.github.io/contributing.html)
+>
+> AI-Ascension is an independent project. It is not affiliated with or endorsed by Mega Crit or Valve and grants no rights to game files, assets, or marks.
 
 Status: Wave 2 codebase initialization. This directory is intentionally not initialized as a Git
 repository and now contains one small, pure Rust core package plus its target-local policy tool.
