@@ -40,3 +40,11 @@ structure. Its only cross-target material is the inert copied `poc-v1` artifact,
 digest recorded in its manifest. It contains no copied product source, game assembly, save, credential,
 or generated build output. Future generated schemas or fixtures must
 record their source, generator, hash, license, and exact-path policy exception when necessary.
+
+## Naming authority
+
+The aggregate [`NAMING_CONVENTIONS.md`](../../planning/naming_conventions/NAMING_CONVENTIONS.md) is
+the shared naming authority, with the owner and exception details in
+[`naming-registry.yaml`](../../planning/naming_conventions/naming-registry.yaml). The concise
+physical directory `crates/core` is intentionally mapped to the `sts2-game-core` package; it does
+not change ownership.

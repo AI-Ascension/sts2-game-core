@@ -25,7 +25,7 @@ provider, storage, or orchestration behavior here.
 3. Add deterministic tests for accepted, rejected, stale, and invalid inputs as applicable.
 4. Run the policy, format, Clippy, metadata, and test commands in [`docs/TESTING.md`](docs/TESTING.md).
 5. Update compatibility, licensing, architecture, and changelog documentation when relevant.
-6. Describe runtime-unverified evidence and checks not run in the pull request.
+6. Describe unverified runtime evidence and checks not run in the pull request.
 
 Discuss first when changing a public state/action shape, validation order, identity lifetime, error
 meaning, serialization, dependency boundary, or protocol-consumer relationship. Never add a dependency
