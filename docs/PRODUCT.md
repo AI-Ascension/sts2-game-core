@@ -28,6 +28,10 @@ The frozen Runtime-v2 semantic slice adds a session-scoped `CombatSnapshot`, an 
 the deterministic `generation 4 / turn 2 -> generation 5 / turn 3` transition. This is pure core
 settlement, not evidence of a host action.
 
+Its representational adapter requires callers to check `TurnIndex` against an inclusive maximum of
+1024 and `Generation` against the safe-integer maximum of `9_007_199_254_740_991` before producing a
+Runtime-v2 observation. Out-of-range values return typed errors; they are never clamped or wrapped.
+
 The seam models an actor-owned bounded resource and open/closed lifecycle as a deliberately small
 semantic test contract. It does not claim to reproduce game mechanics and is not a frozen wire shape.
 Validation is read-only: acceptance returns a proposal for the owning boundary, not execution.

@@ -39,6 +39,10 @@ session-scoped `CombatSnapshot` values and the frozen `end_turn` transition from
 to generation 5/turn 3 with a typed pure domain witness. Acceptance and pure domain settlement remain
 semantic evidence, not host execution.
 
+Before producing a Runtime-v2 observation, use the checked projection: turn index values above 1024
+and generations above `9_007_199_254_740_991` are rejected with typed errors rather than silently
+clamped or wrapped.
+
 ## Non-goals and boundaries
 
 Core does not own HTTP, MCP framing or tools, gateway lifecycle/routing, process management, filesystem

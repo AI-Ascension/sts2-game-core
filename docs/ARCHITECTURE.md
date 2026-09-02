@@ -40,6 +40,8 @@ The initialized core package is split into cohesive modules:
 - **Actions** represents typed proposals and their declared arguments, not host calls.
 - **Combat** represents session-scoped combat snapshots, the frozen `end_turn` action, and its
   immutable settled domain witness.
+- **Runtime-v2 representation** projects numeric domain values through explicit checked limits;
+  it does not serialize, persist, or contact a host.
 - **Identity** represents actor/session and generation scope without inferring identity from position.
 - **Validation** checks a proposal against a supplied snapshot and returns structured results.
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.

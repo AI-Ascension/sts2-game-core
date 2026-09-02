@@ -33,6 +33,11 @@ data-only and does not import protocol implementation internals.
 before state change, repeated evaluation stability, immutable input, and stale rejection when the
 same validated proposal is evaluated against the newer snapshot. No test uses persistence or a host.
 
+`runtime_v2_projection` proves the representational boundary accepts turn index 1024 and generation
+`9_007_199_254_740_991`, rejects the next values with typed errors, projects a bounded observation,
+and leaves the original domain values unchanged. These tests do not serialize a message or establish
+consumer wire/runtime compatibility.
+
 ## Future core test layers
 
 - **Unit:** pure state, action, identity, generation, validation, error, and ordering behavior.
