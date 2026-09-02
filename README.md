@@ -1,7 +1,7 @@
 # sts2-game-core
 
-Status: Wave 2 codebase initialization. This directory is intentionally not initialized as a Git
-repository and now contains one small, pure Rust core package plus its target-local policy tool.
+Status: active Git-backed target repository. It contains one small, pure Rust core package plus its
+target-local policy tool.
 
 ## Owner and consumers
 

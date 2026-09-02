@@ -34,7 +34,7 @@ consumers, independent versioning, language/transport neutrality, provenance, an
 
 ## Provenance and generated content
 
-This target is authored using the planning/project-policy standards and the
-structural shape of the preserved `sts2-harness-rust` exemplar. It contains no copied product source,
+This target is authored using the planning/project-policy standards and its own local repository
+structure. It contains no copied product source,
 game assembly, save, credential, or generated artifact. Future generated schemas or fixtures must
 record their source, generator, hash, license, and exact-path policy exception when necessary.
