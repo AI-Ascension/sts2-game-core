@@ -12,7 +12,8 @@ HTTP route, MCP tool, gateway process, provider, save format, or another harness
 | Subject | Version or identity | Evidence level |
 |---|---|---|
 | Repository foundation | Unreleased target preparation | Confirmed static structure only |
-| Core domain contract | Unreleased package v0.0.0; initial semantic seam | Confirmed by deterministic unit/integration tests; not a frozen wire contract |
+| Core domain contract | Unreleased package v0.0.0; deterministic `use_budget` seam | Confirmed by deterministic unit/integration tests; not a frozen game contract |
+| POC artifact mapping | `sts2-protocol/poc-v1` and its recorded schema digest | Confirmed local manifest/schema/fixture presence; no protocol implementation or runtime claim |
 | Game host/runtime | Not owned by this target | Unverified here; mod-owned evidence required |
 
 The initial seam is an internal semantic contract for this target, not a frozen wire or game-mechanics
@@ -37,9 +38,9 @@ from a mod build or a protocol package version.
 ## Host and protocol separation
 
 The mod owns exact host-version, loader, ABI, main-thread, and disposable-profile evidence. Core may
-be reused by the mod without inheriting its host claims. The sixth protocol target owns only shared
-contracts that pass its consumer, neutrality, provenance, versioning, and conformance gates. A
-protocol dependency is not introduced merely because two targets exchange data at runtime.
+be reused by the mod without inheriting its host claims. The sixth protocol target owns the shared
+artifact representation; this target verifies copied bytes as data and does not infer semantic or
+runtime compatibility from that check.
 
 ## Evidence language
 

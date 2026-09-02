@@ -25,17 +25,17 @@ generation values, validation, typed domain errors, and deterministic policy. Th
 `sts2-game-core` package is under `crates/core`; its public seam is covered by deterministic tests.
 No sibling target may reach into core internals.
 
-The accepted sixth target, `sts2-protocol`, may be a compile-time dependency only for a separately
-accepted language- and transport-neutral contract with at least two named consumers. No such dependency
-is introduced by this initialization wave.
+The accepted sixth target supplies a release-like `poc-v1` artifact. This repository verifies a local
+copy of that artifact as data; it does not import protocol implementation modules or create a sibling
+path dependency.
 
 ## Initial semantic seam
 
-The package currently provides typed `Identity`, `Generation`, `Phase`, `State`, `Action`, and
-`Request` values plus pure `validate` logic. The small contract models an actor-owned bounded
-resource and open/closed lifecycle solely to exercise identity, freshness, typed validation errors,
-and reproducibility. Validation returns an accepted proposal or a structured rejection; it performs
-no mutation and does not claim host execution.
+The package provides typed `Identity`, `Generation`, `Phase`, `State`, `Action`, and `Request` values,
+pure `validate` logic, and checked application of an accepted proposal. The POC models one actor-owned
+bounded resource: `use_budget` changes available units, generation, and settled-effect count exactly
+once; zero units is rejected without a state change. Acceptance remains semantic evidence, not host
+execution.
 
 ## Non-goals and boundaries
 
@@ -55,7 +55,8 @@ implementation's source.
 
 Reserved areas are `schemas/domain`, `conformance`, the root `tests` directory, and `tools`.
 They are not permission to create empty placeholder crates. The current target shape is documented in
-the [repository layout](docs/REPOSITORY_LAYOUT.md).
+the [repository layout](docs/REPOSITORY_LAYOUT.md). The staged scope is recorded in the workspace
+planning corpus and is not a product dependency.
 
 ## Local validation
 

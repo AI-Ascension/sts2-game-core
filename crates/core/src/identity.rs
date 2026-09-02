@@ -9,8 +9,11 @@ pub struct Identity(NonZeroU64);
 impl Identity {
     /// Creates an identity, rejecting the reserved zero value.
     #[must_use]
-    pub fn new(value: u64) -> Option<Self> {
-        NonZeroU64::new(value).map(Self)
+    pub const fn new(value: u64) -> Option<Self> {
+        match NonZeroU64::new(value) {
+            Some(value) => Some(Self(value)),
+            None => None,
+        }
     }
 
     /// Returns the stable numeric representation used by this domain boundary.

@@ -25,7 +25,7 @@ Runtime communication and compile-time dependency edges are different:
 ```text
 Runtime:       harness -> MCP server -> gateway -> isolated game mod -> game host
 Compile time:   game mod -> core
-               core/gateway/MCP/harness -> protocol only for accepted shared contracts
+               core/gateway/MCP/harness -> released protocol artifacts only
 ```
 
 Core has no edge to HTTP, MCP, gateway, process, filesystem, concrete host, loader, or model code.
@@ -42,9 +42,9 @@ The initialized core package is split into cohesive modules:
 - **Validation** checks a proposal against a supplied snapshot and returns structured results.
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.
 
-The current package is `sts2-game-core` at `crates/core`. It has no product dependency other than
-the workspace's standard library baseline and no path dependency on `sts2-protocol`. The root Cargo
-workspace also contains the independent governance checker.
+The current package is `sts2-game-core` at `crates/core`. It consumes only the checked-in
+`protocol-artifact/poc-v1` data and has no path dependency on `sts2-protocol` or another product
+implementation. The root Cargo workspace also contains the independent governance checker.
 
 Validation can reject stale, malformed, or illegal input. It cannot authorize or perform a host
 mutation, and acceptance by core never means that a host transition completed. The mod re-reads host
@@ -55,8 +55,9 @@ state and retains authority at its boundary.
 Dependencies point inward toward stable semantic abstractions. Product core code may use the Rust
 standard library and an explicitly approved neutral serialization/value dependency, but must not add
 transport, process, filesystem, clock, concrete-host, loader, provider, or sibling application
-dependencies. An accepted protocol dependency requires two named consumers, a version, provenance,
-and implementation-neutral conformance fixtures; the current foundation introduces none.
+dependencies. The local artifact verifier requires the POC version, schema digest, manifest identity,
+schema ID, fixture metadata/shapes, and exact checksums for its explicit copied-file scope; it is not
+conformance with the protocol Rust implementation.
 
 No unsafe code is permitted in this target. Unsafe host/FFI work belongs to the mod boundary, where
 its lifetime, thread, ownership, and unload invariants can be reviewed separately.
