@@ -7,7 +7,7 @@
 3. Record a decision for ownership, dependency, public-contract, or protocol-scope changes.
 4. Add deterministic requirements/tests before or with product behavior.
 5. Run strict policy, metadata, format, Clippy, and tests; report unavailable gates explicitly.
-6. Review provenance, security, compatibility, changelog, and runtime-unverified claims.
+6. Review provenance, security, compatibility, changelog, and claims with unverified runtime evidence.
 
 Keep pull requests focused. Do not combine core semantic work with host loader, gateway lifecycle,
 MCP, harness/provider, deployment, or release work.

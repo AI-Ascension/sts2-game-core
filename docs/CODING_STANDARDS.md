@@ -46,3 +46,10 @@ than encoding them as compatibility facts.
 Every public item needs documentation for behavior, errors, compatibility, and invariants. A change
 must explain its owner, consumer, dependency impact, deterministic tests, documentation impact, and
 remaining runtime evidence. Run the commands in [`TESTING.md`](TESTING.md) before review.
+
+## Aggregate naming authority
+
+Use the aggregate NAMING_CONVENTIONS.md and naming-registry.yaml for casing,
+semantic identity namespaces, lifecycle terms, evidence states, and protected names. Core-owned
+domain names remain distinct from protocol, gateway, host, and harness identities even when a suffix
+matches.
