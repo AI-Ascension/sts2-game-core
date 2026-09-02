@@ -49,8 +49,7 @@ remaining runtime evidence. Run the commands in [`TESTING.md`](TESTING.md) befor
 
 ## Aggregate naming authority
 
-Use the aggregate [`NAMING_CONVENTIONS.md`](../../planning/naming_conventions/NAMING_CONVENTIONS.md)
-and [`naming-registry.yaml`](../../planning/naming_conventions/naming-registry.yaml) for casing,
+Use the aggregate NAMING_CONVENTIONS.md and naming-registry.yaml for casing,
 semantic identity namespaces, lifecycle terms, evidence states, and protected names. Core-owned
 domain names remain distinct from protocol, gateway, host, and harness identities even when a suffix
 matches.
