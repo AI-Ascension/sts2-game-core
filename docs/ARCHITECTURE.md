@@ -38,6 +38,10 @@ The initialized core package is split into cohesive modules:
 
 - **State** represents owned snapshots, scoped values, and explicit point-in-time semantics.
 - **Actions** represents typed proposals and their declared arguments, not host calls.
+- **Combat** represents session-scoped combat snapshots, the frozen `end_turn` action, and its
+  immutable settled domain witness.
+- **Runtime-v2 representation** projects numeric domain values through explicit checked limits;
+  it does not serialize, persist, or contact a host.
 - **Identity** represents actor/session and generation scope without inferring identity from position.
 - **Validation** checks a proposal against a supplied snapshot and returns structured results.
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.
@@ -47,8 +51,9 @@ The current package is `sts2-game-core` at `crates/core`. It consumes only the c
 implementation. The root Cargo workspace also contains the independent governance checker.
 
 Validation can reject stale, malformed, or illegal input. It cannot authorize or perform a host
-mutation, and acceptance by core never means that a host transition completed. The mod re-reads host
-state and retains authority at its boundary.
+mutation, and acceptance or pure domain settlement by core never means that a host transition
+completed. The mod re-reads host state and retains authority at its boundary. Operation receipts,
+duplicate/idempotency decisions, and reconciliation remain boundary-owned.
 
 ## Dependency rules
 

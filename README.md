@@ -31,11 +31,17 @@ path dependency.
 
 ## Initial semantic seam
 
-The package provides typed `Identity`, `Generation`, `Phase`, `State`, `Action`, and `Request` values,
-pure `validate` logic, and checked application of an accepted proposal. The POC models one actor-owned
-bounded resource: `use_budget` changes available units, generation, and settled-effect count exactly
-once; zero units is rejected without a state change. Acceptance remains semantic evidence, not host
-execution.
+The package provides typed `Identity`, `SessionId`, `Generation`, `Phase`, `State`, `Action`, and
+`Request` values, pure `validate` logic, and checked application of accepted proposals. The POC models
+one actor-owned bounded resource: `use_budget` changes available units, generation, and settled-effect
+count exactly once; zero units is rejected without a state change. The additive Runtime-v2 seam models
+session-scoped `CombatSnapshot` values and the frozen `end_turn` transition from generation 4/turn 2
+to generation 5/turn 3 with a typed pure domain witness. Acceptance and pure domain settlement remain
+semantic evidence, not host execution.
+
+Before producing a Runtime-v2 observation, use the checked projection: turn index values above 1024
+and generations above `9_007_199_254_740_991` are rejected with typed errors rather than silently
+clamped or wrapped.
 
 ## Non-goals and boundaries
 
