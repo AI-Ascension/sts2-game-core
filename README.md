@@ -54,8 +54,9 @@ be project-owned, deterministic, exact-versioned, and clearly labeled `confirmed
 implementation's source.
 
 Reserved areas are `schemas/domain`, `conformance`, the root `tests` directory, and `tools`.
-They are not permission to create empty placeholder crates. The staged scope is recorded in the
-workspace planning corpus and is not a product dependency.
+They are not permission to create empty placeholder crates. The current target shape is documented in
+the [repository layout](docs/REPOSITORY_LAYOUT.md). The staged scope is recorded in the workspace
+planning corpus and is not a product dependency.
 
 ## Local validation
 

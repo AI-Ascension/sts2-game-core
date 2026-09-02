@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use sts2_game_core::{
-    Action, Generation, Identity, Phase, Request, State, ValidatedAction, ValidationError,
-    validate, verify_poc_artifact,
+    Action, ApplyError, ArtifactError, Generation, Identity, Phase, Request, State,
+    ValidatedAction, ValidationError, validate, verify_poc_artifact,
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -182,7 +182,8 @@ fn golden_vectors_are_reproducible_across_repeated_evaluation() -> Result<(), &'
 
 #[test]
 fn poc_valid_action_changes_state_once_and_invalid_action_does_not() -> Result<(), &'static str> {
-    verify_poc_artifact().map_err(|_| "protocol artifact is not valid")?;
+    let artifact_result: Result<(), ArtifactError> = verify_poc_artifact();
+    artifact_result.map_err(|_| "protocol artifact is not valid")?;
     let state = State::new(identity(1)?, Generation::new(0), Phase::Open, 3);
     let valid = Request::new(
         identity(1)?,
@@ -208,6 +209,25 @@ fn poc_valid_action_changes_state_once_and_invalid_action_does_not() -> Result<(
     );
     assert_eq!(changed.available_units(), 2);
     assert_eq!(changed.settled_effects(), 1);
+    Ok(())
+}
+
+#[test]
+fn rejects_open_proposal_on_same_generation_closed_state() -> Result<(), &'static str> {
+    let owner = identity(1)?;
+    let open = State::new(owner, Generation::new(0), Phase::Open, 3);
+    let request = Request::new(owner, Generation::new(0), Action::UseBudget { units: 1 });
+    let accepted = validate(&open, &request).map_err(|_| "open proposal was rejected")?;
+    let closed = State::new(owner, Generation::new(0), Phase::Closed, 3);
+
+    assert_eq!(
+        closed.apply(&accepted),
+        Err(ApplyError::ActionNotApplicable)
+    );
+    assert_eq!(closed.phase(), Phase::Closed);
+    assert_eq!(closed.generation(), Generation::new(0));
+    assert_eq!(closed.available_units(), 3);
+    assert_eq!(closed.settled_effects(), 0);
     Ok(())
 }
 
