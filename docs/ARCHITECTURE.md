@@ -56,7 +56,8 @@ Dependencies point inward toward stable semantic abstractions. Product core code
 standard library and an explicitly approved neutral serialization/value dependency, but must not add
 transport, process, filesystem, clock, concrete-host, loader, provider, or sibling application
 dependencies. The local artifact verifier requires the POC version, schema digest, manifest identity,
-schema ID, and JSON fixture presence; it is not conformance with the protocol Rust implementation.
+schema ID, fixture metadata/shapes, and exact checksums for its explicit copied-file scope; it is not
+conformance with the protocol Rust implementation.
 
 No unsafe code is permitted in this target. Unsafe host/FFI work belongs to the mod boundary, where
 its lifetime, thread, ownership, and unload invariants can be reviewed separately.

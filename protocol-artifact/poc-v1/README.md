@@ -1,6 +1,7 @@
 # Consumed `poc-v1` artifact
 
 This is the exact offline release-like artifact copied from `sts2-protocol` PR #2 head
-`3c93b0bed34661ec2e69072d900bb014539e99ec`. The core maps its fields locally and never imports
-protocol implementation modules or a sibling path dependency. `SHA256SUMS` covers every file
-consumed by the core verifier.
+`cad3c85d3cba3363ad387f9c26a3c3cac2782267`. The core maps its fields locally and never imports
+protocol implementation modules or a sibling path dependency. `SHA256SUMS` explicitly covers the
+eight copied schema, manifest, golden, and fixture files consumed by the core verifier; protocol
+source-schema and conformance evidence remain owner-local.
