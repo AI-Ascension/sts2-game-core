@@ -116,7 +116,9 @@ impl State {
             .next()
             .ok_or(ApplyError::GenerationExhausted)?;
         match action.action {
-            Action::UseBudget { units } if units == 0 || units > self.available_units => {
+            Action::UseBudget { units }
+                if self.phase == Phase::Closed || units == 0 || units > self.available_units =>
+            {
                 Err(ApplyError::ActionNotApplicable)
             }
             Action::UseBudget { units } => Ok(Self {
