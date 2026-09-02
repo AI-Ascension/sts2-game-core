@@ -23,6 +23,11 @@ defines explicit types for:
 - validation outcomes that distinguish malformed, stale, illegal, and accepted proposals; and
 - deterministic validation precedence and structured domain errors.
 
+The frozen Runtime-v2 semantic slice adds a session-scoped `CombatSnapshot`, an argument-free
+`end_turn` action, phase/generation/bounds validation, and an immutable settled domain witness for
+the deterministic `generation 4 / turn 2 -> generation 5 / turn 3` transition. This is pure core
+settlement, not evidence of a host action.
+
 The seam models an actor-owned bounded resource and open/closed lifecycle as a deliberately small
 semantic test contract. It does not claim to reproduce game mechanics and is not a frozen wire shape.
 Validation is read-only: acceptance returns a proposal for the owning boundary, not execution.
@@ -34,6 +39,9 @@ or write files/saves, obtain wall-clock time, call providers, load the game, bin
 loader/FFI or main-thread dispatch, or claim an accepted host mutation completed. The mod retains
 host authority; gateway is the lifecycle/routing control plane; MCP is a thin adapter; harness is the
 coordinator and experiment/artifact owner.
+
+Core also does not own operation receipts, duplicate/idempotency storage, timeout reconciliation, or
+retry policy. Those boundary decisions must be explicit when later consumers carry this action.
 
 ## Contract and evidence rules
 

@@ -15,11 +15,15 @@ Semantic Versioning once versioned releases begin.
 - Ownership and dependency decisions for the host-independent core boundary and accepted sixth target.
 - Deterministic `use_budget` application, settled-effect witness state, and verification of the copied
   release-like `sts2-protocol/poc-v1` artifact.
+- A typed, pure Runtime-v2 `end_turn` semantic action with session-scoped combat snapshots,
+  deterministic phase/generation/bounds rejection, and a settled domain effect witness.
 
 ### Changed
 
 - The semantic seam now demonstrates one checked state transition while preserving the host-free
   boundary; no protocol implementation path dependency was added.
+- The Runtime-v2 combat seam is additive to the existing POC API and keeps operation idempotency,
+  receipt storage, and host execution at later owning boundaries.
 
 ### Deprecated
 

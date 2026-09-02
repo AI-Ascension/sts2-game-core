@@ -14,9 +14,10 @@ cargo test --workspace --all-targets --all-features
 
 The workspace now contains the governance checker, the initialized pure `crates/core` package, and
 the local release-like POC artifact verifier. The core tests cover valid, invalid, actor-mismatch,
-stale-generation, checked-generation, one-time state application, artifact identity/checksum scope,
-and reproducibility behavior. Passing these commands proves this semantic seam and checker only; it does
-not prove host, transport, provider, or runtime behavior.
+session-mismatch, stale-generation, combat-phase and checked-bound rejection, one-time state
+application, artifact identity/checksum scope, and reproducibility behavior. Passing these commands
+proves this semantic seam and checker only; it does not prove host, transport, provider, or runtime
+behavior.
 
 ## POC conformance
 
@@ -25,6 +26,12 @@ the mod double: initial generation 0/units 3 becomes generation 1/units 2/effect
 is rejected and leaves the snapshot unchanged. The artifact check validates all five release-like
 golden message shapes and the invalid fixture against the copied metadata and checksum scope. It is
 data-only and does not import protocol implementation internals.
+
+`valid_end_turn_settles_once_with_typed_witness` proves the frozen Runtime-v2 fake transition:
+`combat/player_turn`, generation 4, turn index 2 becomes generation 5, turn index 3 and remains in
+`combat/player_turn`. The companion tests prove actor/session/generation and phase/bounds rejection
+before state change, repeated evaluation stability, immutable input, and stale rejection when the
+same validated proposal is evaluated against the newer snapshot. No test uses persistence or a host.
 
 ## Future core test layers
 

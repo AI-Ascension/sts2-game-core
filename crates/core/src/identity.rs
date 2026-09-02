@@ -23,6 +23,33 @@ impl Identity {
     }
 }
 
+/// A stable non-zero identity for a semantic session.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct SessionId(NonZeroU64);
+
+impl SessionId {
+    /// Creates a session identity, rejecting the reserved zero value.
+    #[must_use]
+    pub const fn new(value: u64) -> Option<Self> {
+        match NonZeroU64::new(value) {
+            Some(value) => Some(Self(value)),
+            None => None,
+        }
+    }
+
+    /// Returns the deterministic session identity used by legacy in-memory fixtures.
+    #[must_use]
+    pub const fn initial() -> Self {
+        Self(NonZeroU64::MIN)
+    }
+
+    /// Returns the stable numeric representation of this session identity.
+    #[must_use]
+    pub const fn value(self) -> u64 {
+        self.0.get()
+    }
+}
+
 /// A monotonically increasing version for a point-in-time semantic state.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Generation(u64);
@@ -58,12 +85,15 @@ impl Generation {
 
 #[cfg(test)]
 mod tests {
-    use super::{Generation, Identity};
+    use super::{Generation, Identity, SessionId};
 
     #[test]
     fn zero_is_not_an_identity() {
         assert_eq!(Identity::new(0), None);
         assert_eq!(Identity::new(9).map(Identity::value), Some(9));
+        assert_eq!(SessionId::new(0), None);
+        assert_eq!(SessionId::new(9).map(SessionId::value), Some(9));
+        assert_eq!(SessionId::initial().value(), 1);
     }
 
     #[test]

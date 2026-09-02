@@ -12,13 +12,14 @@ HTTP route, MCP tool, gateway process, provider, save format, or another harness
 | Subject | Version or identity | Evidence level |
 |---|---|---|
 | Repository foundation | Unreleased target preparation | Confirmed static structure only |
-| Core domain contract | Unreleased package v0.0.0; deterministic `use_budget` seam | Confirmed by deterministic unit/integration tests; not a frozen game contract |
+| Core domain contract | Unreleased package v0.0.0; deterministic `use_budget` and frozen `end_turn` seams | Confirmed by deterministic unit/integration tests; not a frozen game contract |
 | POC artifact mapping | `sts2-protocol/poc-v1` and its recorded schema digest | Confirmed local manifest/schema/fixture presence; no protocol implementation or runtime claim |
 | Game host/runtime | Not owned by this target | Unverified here; mod-owned evidence required |
 
-The initial seam is an internal semantic contract for this target, not a frozen wire or game-mechanics
-compatibility promise. A successful policy, metadata, format, lint, or test run does not establish
-host/runtime compatibility.
+The initial and Runtime-v2 seams are internal semantic contracts for this target, not frozen wire or
+game-mechanics compatibility promises. A successful policy, metadata, format, lint, or test run does
+not establish host/runtime compatibility. Runtime-v2 operation identity, receipt, reconciliation,
+and idempotency behavior remains a later boundary contract.
 
 ## Compatibility classes
 
