@@ -5,6 +5,7 @@
 mod combat;
 mod end_turn;
 mod identity;
+mod play_card;
 mod protocol_artifact;
 mod runtime_v2;
 mod state;
@@ -16,6 +17,10 @@ pub use end_turn::{
     SettledEndTurn, ValidatedEndTurn, validate_end_turn,
 };
 pub use identity::{Generation, Identity, SessionId};
+pub use play_card::{
+    PLAY_CARD_MAX_INDEX, PlayCardRequest, PlayCardValidationError, ValidatedPlayCard,
+    validate_play_card,
+};
 pub use protocol_artifact::{
     ArtifactError, POC_ARTIFACT, POC_PROTOCOL_VERSION, POC_SCHEMA_DIGEST, verify_poc_artifact,
 };
