@@ -116,8 +116,8 @@ pub fn exact_card_damage(
         CardTarget::AllEnemies | CardTarget::SelfPlayer | CardTarget::None => None,
     };
     let total = if card.target == TargetDomain::AllEnemies {
-        let enemy_count = u32::try_from(state.enemies.len())
-            .map_err(|_| CalculatorError::ArithmeticOverflow)?;
+        let enemy_count =
+            u32::try_from(state.enemies.len()).map_err(|_| CalculatorError::ArithmeticOverflow)?;
         damage
             .checked_mul(enemy_count)
             .ok_or(CalculatorError::ArithmeticOverflow)?
