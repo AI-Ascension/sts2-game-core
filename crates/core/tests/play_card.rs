@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use sts2_game_core::{
-    CardSpec, CardTarget, CombatCalculationState, EnemyFacts, Generation, Identity, PlayCardRequest,
-    SessionId, TargetDomain, calculate_play_card, validate_play_card,
+    CardSpec, CardTarget, CombatCalculationState, EnemyFacts, Generation, Identity,
+    PlayCardRequest, SessionId, TargetDomain, calculate_play_card, validate_play_card,
 };
 
 fn card() -> CardSpec {

@@ -43,7 +43,9 @@ fn exact_calculators_use_only_visible_facts() {
     );
     assert!(exact_lethal(&strike(), &facts, CardTarget::Enemy(1)).unwrap());
     assert_eq!(
-        exact_resource_after_card(&strike(), &facts).unwrap().energy_after,
+        exact_resource_after_card(&strike(), &facts)
+            .unwrap()
+            .energy_after,
         1
     );
     assert_eq!(exact_end_turn_survival(&facts).unwrap().hp_after, 6);

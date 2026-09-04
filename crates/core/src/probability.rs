@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-use crate::calculators::{CalculatorError, CombatCalculationState, ExactSurvival, exact_end_turn_survival};
+use crate::calculators::{
+    CalculatorError, CombatCalculationState, ExactSurvival, exact_end_turn_survival,
+};
 
 const MAX_BELIEF_OUTCOMES: usize = 256;
 

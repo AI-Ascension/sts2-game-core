@@ -188,7 +188,10 @@ fn validate_target(
         | (TargetDomain::SelfPlayer, CardTarget::SelfPlayer)
         | (TargetDomain::AllEnemies, CardTarget::AllEnemies) => Ok(()),
         (TargetDomain::SingleEnemy, CardTarget::Enemy(enemy_id))
-            if state.enemies.iter().any(|enemy| enemy.enemy_id == enemy_id) => Ok(()),
+            if state.enemies.iter().any(|enemy| enemy.enemy_id == enemy_id) =>
+        {
+            Ok(())
+        }
         _ => Err(CalculatorError::InvalidTarget),
     }
 }
