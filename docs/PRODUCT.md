@@ -38,6 +38,11 @@ Validation is read-only: acceptance returns a proposal for the owning boundary, 
 
 ## Non-goals
 
+The proposed earlier Runtime-v3 `play_card` seam validates only actor, session, freshness, combat
+phase, hand-index bounds, and generation availability. It carries an optional target identity
+without validating target legality and returns an unchanged proposal, not execution or settlement.
+See [ADR 0007](decisions/0007-runtime-v3-card-action-semantics.md).
+
 Core does not expose HTTP or MCP, own gateway lifecycle/routing, start or supervise processes, read
 or write files/saves, obtain wall-clock time, call providers, load the game, bind host objects, own
 loader/FFI or main-thread dispatch, or claim an accepted host mutation completed. The mod retains

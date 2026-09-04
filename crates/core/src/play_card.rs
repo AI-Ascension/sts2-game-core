@@ -18,6 +18,7 @@ pub struct PlayCardRequest {
 }
 
 impl PlayCardRequest {
+    /// Creates a proposal; the target is carried unchanged, not resolved or authorized here.
     #[must_use]
     pub const fn new(
         actor: Identity,
@@ -36,26 +37,31 @@ impl PlayCardRequest {
     }
 
     #[must_use]
+    /// Returns the actor proposing the action.
     pub const fn actor(self) -> Identity {
         self.actor
     }
 
     #[must_use]
+    /// Returns the session scoping the proposal.
     pub const fn session(self) -> SessionId {
         self.session
     }
 
     #[must_use]
+    /// Returns the point-in-time generation observed by the proposer.
     pub const fn expected_generation(self) -> Generation {
         self.expected_generation
     }
 
     #[must_use]
+    /// Returns the zero-based position in the observed hand, not a stable card identity.
     pub const fn card_index(self) -> u16 {
         self.card_index
     }
 
     #[must_use]
+    /// Returns the opaque proposed target; presence does not establish target legality.
     pub const fn target_id(self) -> Option<Identity> {
         self.target_id
     }
@@ -68,6 +74,7 @@ pub struct ValidatedPlayCard {
 }
 
 impl ValidatedPlayCard {
+    /// Returns the unchanged proposal; host checks and mutation have not occurred.
     #[must_use]
     pub const fn request(self) -> PlayCardRequest {
         self.request
@@ -77,19 +84,31 @@ impl ValidatedPlayCard {
 /// The first deterministic rejection in the pure card-play seam.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PlayCardValidationError {
+    /// The actor does not own the snapshot.
     ActorMismatch,
+    /// The proposal belongs to a different session.
     SessionMismatch,
+    /// The expected generation differs from the snapshot generation.
     StaleGeneration,
+    /// The snapshot is outside combat.
     OutsideCombat,
+    /// The snapshot is in an enemy turn.
     EnemyTurn,
+    /// The index exceeds the inclusive profile maximum.
     CardIndexOutOfRange,
+    /// The index is not below the supplied point-in-time hand count.
     CardNotInHand,
+    /// The domain generation cannot advance without wrapping.
     GenerationExhausted,
 }
 
 /// Checks identity, snapshot freshness, phase, and hand-index bounds without host or transport
 /// access. The mod must still revalidate the concrete card model and target immediately before it
 /// queues the host action.
+/// Checks are ordered: actor, session, generation, phase, profile index bound, hand membership,
+/// then generation exhaustion. `hand_count` must describe the same snapshot; core cannot establish
+/// its provenance. Targets are preserved without checking existence, kind, or suitability. A
+/// successful result is a proposal, not card execution or settlement.
 ///
 /// # Errors
 ///

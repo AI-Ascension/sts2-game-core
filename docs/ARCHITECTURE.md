@@ -70,6 +70,11 @@ its lifetime, thread, ownership, and unload invariants can be reviewed separatel
 
 ## Change control
 
+The proposed earlier Runtime-v3 card seam adds pure bounded admission only. `PlayCardRequest`
+carries an optional target unchanged; game-mod owns target resolution, cost, concrete legality,
+fresh host admission, dispatch, and settlement. See
+[ADR 0007](decisions/0007-runtime-v3-card-action-semantics.md).
+
 Changes to ownership, dependency direction, public shape, validation order, identity lifetime, or
 protocol relationships require a decision record under `docs/decisions/`. Do not create a product
 crate merely to fill the reserved scaffold. See [`PRODUCT.md`](PRODUCT.md),

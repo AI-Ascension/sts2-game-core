@@ -7,6 +7,9 @@ Semantic Versioning once versioned releases begin.
 
 ### Added
 
+- Bounded card-proposal validation with actor/session/freshness/phase/hand checks and opaque target
+  preservation; host target legality, card cost, dispatch, and settlement remain outside core.
+
 - Target-local repository governance and contributor guidance.
 - Core-specific architecture, product, compatibility, testing, licensing, workflow, and policy docs.
 - A Rust-only governance workspace with a strict repository-policy checker.

@@ -26,6 +26,12 @@ compatibility guarantee.
 
 ## Compatibility classes
 
+The earlier Runtime-v3 proposal adds bounded `PlayCardRequest` validation at package 0.0.0 without
+changing existing APIs or adding wire serialization. Its target is opaque, not validated here.
+The intended game-mod consumer must revalidate host facts. The alternative calculator/simulation
+proposal in PR #6 is not claimed compatible merely because both use Runtime-v3 terminology.
+See [ADR 0007](decisions/0007-runtime-v3-card-action-semantics.md) for checks and evidence limits.
+
 Classify every future change as one of:
 
 - **Internal:** no observable contract or consumer change.

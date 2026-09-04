@@ -46,6 +46,11 @@ consumer wire/runtime compatibility.
 
 ## Future core test layers
 
+`play_card` tests cover actor/session/freshness/phase rejection, index and hand-count bounds,
+generation exhaustion, rejection precedence, opaque target preservation, and immutable repeatable
+evaluation. No test resolves a target, computes card cost, or establishes host execution. See
+[ADR 0007](decisions/0007-runtime-v3-card-action-semantics.md).
+
 - **Unit:** pure state, action, identity, generation, validation, error, and ordering behavior.
 - **Semantic conformance:** project-owned requirements and deterministic accepted/rejected outcomes.
 - **Serialization/golden:** only when an external shape is approved; fixtures must be readable,
