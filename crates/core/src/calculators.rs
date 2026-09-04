@@ -10,7 +10,10 @@ pub struct EnemyFacts {
     pub max_hp: u16,
 }
 
-/// Host-independent facts copied from one ordinary observation.
+/// Inputs to a simplified arithmetic model, copied from one coherent ordinary observation.
+/// Incoming damage must already include all relevant effects except this player's block.
+/// This type cannot represent damage modifiers, enemy block, healing, or triggered effects;
+/// callers must not treat its results as game-exact when those omissions matter.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CombatCalculationState {
     pub player_hp: u16,
@@ -46,7 +49,8 @@ impl CombatCalculationState {
     }
 }
 
-/// Exact damage result derived from visible card and enemy facts.
+/// Nominal damage in the supplied model, not capped HP loss or proof of a host effect.
+/// All-enemy damage is summed over every supplied enemy; no target mitigation is modeled.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ExactDamage {
     pub damage: u32,
@@ -169,7 +173,9 @@ pub fn exact_end_turn_survival(
     })
 }
 
-/// Checks whether one visible card play is exactly lethal for its selected target.
+/// Checks nominal lethality in the supplied model, without target mitigation or other effects.
+/// For `AllEnemies`, returns whether at least one supplied enemy meets the damage threshold,
+/// not whether the entire encounter ends. Caller-supplied zero-HP entries also meet that threshold.
 ///
 /// # Errors
 ///

@@ -27,6 +27,13 @@ compatibility guarantee.
 
 ## Compatibility classes
 
+PR #6's unreleased card-calculation safety correction replaces the bare generation argument with
+`&CombatSnapshot`. Recalculation now takes `&ValidatedPlayCard`, current facts, snapshot, and hand.
+Tokens are no longer `Copy`; they retain the bounded source facts. Callers must migrate these
+arguments together and handle actor/session/phase, malformed-hand and stale-observation errors.
+This changes no serialized contract. The model assumptions and validation order are recorded in
+[ADR 0006](decisions/0006-exact-calculators-and-belief-simulation.md).
+
 Classify every future change as one of:
 
 - **Internal:** no observable contract or consumer change.

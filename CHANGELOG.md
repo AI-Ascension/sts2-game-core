@@ -1,5 +1,9 @@
 # Changelog
 
+- Safety correction: bind unreleased card-validation tokens to actor/session/phase and exact
+  observed facts; reject ambiguous hands and revalidate before calculation. Document simplified
+  model assumptions and add independent arithmetic/bounds regressions. No wire contract changes.
+
 All notable user-visible changes to this target will be documented here. The project follows
 Semantic Versioning once versioned releases begin.
 

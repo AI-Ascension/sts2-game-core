@@ -49,6 +49,12 @@ survival facts, target and duplicate rejection, stale card generations, and expl
 enumeration. They do not prove hidden game mechanics, future randomness, host legality, or live
 settlement.
 
+Card regression tests check foreign actor/session, wrong phase, validation precedence, bounded
+unique hand-instance identity, missing/changed cards, resource revalidation, and changed facts under
+the same generation. Calculator boundary tests use hand-computed maximum-width results and a
+small exhaustive survival truth table. Belief tests cover empty/zero/oversized distributions and
+maximum positive weights. These establish model arithmetic, not independent game-rule parity.
+
 ## Future core test layers
 
 - **Unit:** pure state, action, identity, generation, validation, error, and ordering behavior.
