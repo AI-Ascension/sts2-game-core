@@ -36,6 +36,14 @@ The seam models an actor-owned bounded resource and open/closed lifecycle as a d
 semantic test contract. It does not claim to reproduce game mechanics and is not a frozen wire shape.
 Validation is read-only: acceptance returns a proposal for the owning boundary, not execution.
 
+## Observation-derived combat calculations
+
+The core also provides pure card-play validation and exact calculators for visible target domains,
+damage, energy, lethal status, and end-turn survival. A `BeliefState` is accepted only when its
+possible observations and positive weights are explicit; weighted results retain an
+`ExplicitBelief` estimate label. No calculator uses a visible seed to derive a future draw, intent,
+reward, map, or event outcome. Host legality and mutation remain game-mod responsibilities.
+
 ## Non-goals
 
 Core does not expose HTTP or MCP, own gateway lifecycle/routing, start or supervise processes, read

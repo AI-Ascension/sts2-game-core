@@ -44,6 +44,11 @@ same validated proposal is evaluated against the newer snapshot. No test uses pe
 and leaves the original domain values unchanged. These tests do not serialize a message or establish
 consumer wire/runtime compatibility.
 
+`combat_calculators`, `play_card`, and `simulator_parity` cover exact visible damage/resource/
+survival facts, target and duplicate rejection, stale card generations, and explicit-belief weighted
+enumeration. They do not prove hidden game mechanics, future randomness, host legality, or live
+settlement.
+
 ## Future core test layers
 
 - **Unit:** pure state, action, identity, generation, validation, error, and ordering behavior.

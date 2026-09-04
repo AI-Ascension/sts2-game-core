@@ -13,6 +13,7 @@ HTTP route, MCP tool, gateway process, provider, save format, or another harness
 |---|---|---|
 | Repository foundation | Unreleased target preparation | Confirmed static structure only |
 | Core domain contract | Unreleased package v0.0.0; deterministic `use_budget`, frozen `end_turn`, and checked Runtime-v2 projection seams | Confirmed by deterministic unit/integration tests; not a frozen game contract |
+| Observation calculators | Unreleased pure card-play, exact-fact, and explicit-belief modules | Confirmed by host-independent tests; rules outside supplied facts and target-build behavior unverified |
 | POC artifact mapping | `sts2-protocol/poc-v1` and its recorded schema digest | Confirmed local manifest/schema/fixture presence; no protocol implementation or runtime claim |
 | Game host/runtime | Not owned by this target | Unverified here; mod-owned evidence required |
 
