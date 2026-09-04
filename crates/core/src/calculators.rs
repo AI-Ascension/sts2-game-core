@@ -23,6 +23,10 @@ pub struct CombatCalculationState {
 
 impl CombatCalculationState {
     /// Validates bounds and duplicate visible enemy identities.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when player or enemy facts are malformed or an enemy identity is duplicated.
     pub fn validate(&self) -> Result<(), CalculatorError> {
         if self.player_hp > self.max_player_hp || self.enemies.len() > 256 {
             return Err(CalculatorError::MalformedObservation);
@@ -92,6 +96,10 @@ impl std::fmt::Display for CalculatorError {
 impl std::error::Error for CalculatorError {}
 
 /// Calculates exact damage using only the visible card definition and target facts.
+///
+/// # Errors
+///
+/// Returns an error when the observation, card, target, or arithmetic bounds are invalid.
 pub fn exact_card_damage(
     card: &CardSpec,
     state: &CombatCalculationState,
@@ -108,8 +116,10 @@ pub fn exact_card_damage(
         CardTarget::AllEnemies | CardTarget::SelfPlayer | CardTarget::None => None,
     };
     let total = if card.target == TargetDomain::AllEnemies {
+        let enemy_count = u32::try_from(state.enemies.len())
+            .map_err(|_| CalculatorError::ArithmeticOverflow)?;
         damage
-            .checked_mul(state.enemies.len() as u32)
+            .checked_mul(enemy_count)
             .ok_or(CalculatorError::ArithmeticOverflow)?
     } else {
         damage
@@ -121,6 +131,10 @@ pub fn exact_card_damage(
 }
 
 /// Calculates exact energy use without mutating the observation.
+///
+/// # Errors
+///
+/// Returns an error when the observation or card is invalid, or visible energy is insufficient.
 pub fn exact_resource_after_card(
     card: &CardSpec,
     state: &CombatCalculationState,
@@ -138,6 +152,10 @@ pub fn exact_resource_after_card(
 }
 
 /// Calculates exact survival after the visible end-turn incoming damage is settled.
+///
+/// # Errors
+///
+/// Returns an error when the visible combat facts are malformed.
 pub fn exact_end_turn_survival(
     state: &CombatCalculationState,
 ) -> Result<ExactSurvival, CalculatorError> {
@@ -152,6 +170,10 @@ pub fn exact_end_turn_survival(
 }
 
 /// Checks whether one visible card play is exactly lethal for its selected target.
+///
+/// # Errors
+///
+/// Returns an error when the observation, card, target, or arithmetic bounds are invalid.
 pub fn exact_lethal(
     card: &CardSpec,
     state: &CombatCalculationState,

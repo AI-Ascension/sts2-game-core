@@ -22,6 +22,11 @@ pub struct BeliefState {
 
 impl BeliefState {
     /// Creates a belief distribution from explicit, validated outcomes.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when outcomes are empty, exceed the bound, contain invalid states, have
+    /// zero weight, or overflow the total weight.
     pub fn new(outcomes: Vec<BeliefOutcome>) -> Result<Self, CalculatorError> {
         if outcomes.is_empty() || outcomes.len() > MAX_BELIEF_OUTCOMES {
             return Err(CalculatorError::MalformedObservation);
@@ -53,6 +58,10 @@ impl BeliefState {
     }
 
     /// Evaluates exact survival over only the explicitly supplied belief states.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when an explicit branch is malformed or the weighted sum overflows.
     pub fn survival_estimate(&self) -> Result<ProbabilityEstimate, CalculatorError> {
         let mut surviving_weight = 0_u64;
         for outcome in &self.outcomes {

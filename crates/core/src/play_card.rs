@@ -34,6 +34,10 @@ pub struct CardSpec {
 
 impl CardSpec {
     /// Validates a bounded visible card definition.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the card identity or visible hit definition is invalid.
     pub fn validate(self) -> Result<(), PlayCardValidationError> {
         if self.card_id == 0 || (self.hits == 0 && self.damage > 0) {
             return Err(PlayCardValidationError::InvalidCard);
@@ -108,6 +112,11 @@ impl std::fmt::Display for PlayCardValidationError {
 impl std::error::Error for PlayCardValidationError {}
 
 /// Validates one card action against the immutable observation and visible hand.
+///
+/// # Errors
+///
+/// Returns an error when the request is stale, the card is unavailable or invalid, energy is
+/// insufficient, or the selected target is malformed.
 pub fn validate_play_card(
     state: &CombatCalculationState,
     expected_generation: Generation,
@@ -134,6 +143,10 @@ pub fn validate_play_card(
 }
 
 /// Produces exact visible effect facts without mutating a host state.
+///
+/// # Errors
+///
+/// Returns an error when the validated card no longer matches the supplied observation.
 pub fn calculate_play_card(
     validated: ValidatedPlayCard,
     state: &CombatCalculationState,

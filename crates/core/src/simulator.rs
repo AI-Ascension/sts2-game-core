@@ -13,6 +13,10 @@ pub struct SimulationSummary {
 }
 
 /// Evaluates every explicit branch once; it never predicts hidden future randomness.
+///
+/// # Errors
+///
+/// Returns an error when an explicit branch is malformed or a weighted result overflows.
 pub fn simulate_end_turn(belief: &BeliefState) -> Result<SimulationSummary, CalculatorError> {
     let mut surviving_weight = 0_u64;
     let mut hp_after_weighted_sum = 0_u64;
