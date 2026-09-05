@@ -1,5 +1,9 @@
 # Changelog
 
+- Safety correction: bind unreleased card-validation tokens to actor/session/phase and exact
+  observed facts; reject ambiguous hands and revalidate before calculation. Document simplified
+  model assumptions and add independent arithmetic/bounds regressions. No wire contract changes.
+
 All notable user-visible changes to this target will be documented here. The project follows
 Semantic Versioning once versioned releases begin.
 
@@ -19,6 +23,8 @@ Semantic Versioning once versioned releases begin.
   deterministic phase/generation/bounds rejection, and a settled domain effect witness.
 - A checked Runtime-v2 observation projection that rejects turn indices above 1024 and generations
   above the safe-integer maximum `9_007_199_254_740_991` with typed errors.
+- Pure observation-derived card-play validation, exact combat/resource/survival calculators, and an
+  explicit-belief simulator with separate estimate evidence.
 
 ### Changed
 

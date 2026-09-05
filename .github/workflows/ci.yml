@@ -24,6 +24,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify pure core boundary and checked arithmetic
+        run: |
+          git diff --check
+          if grep -REn '\b(unwrap|expect)\b|\b(todo|unimplemented|panic)!' crates/core/src; then exit 1; fi
+          grep -En 'checked_|saturating_' crates/core/src/calculators.rs crates/core/src/probability.rs crates/core/src/simulator.rs
+
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.97.1 --profile minimal --component clippy --component rustfmt --no-self-update
 

@@ -13,6 +13,7 @@ HTTP route, MCP tool, gateway process, provider, save format, or another harness
 |---|---|---|
 | Repository foundation | Unreleased target preparation | Confirmed static structure only |
 | Core domain contract | Unreleased package v0.0.0; deterministic `use_budget`, frozen `end_turn`, and checked Runtime-v2 projection seams | Confirmed by deterministic unit/integration tests; not a frozen game contract |
+| Observation calculators | Unreleased pure card-play, exact-fact, and explicit-belief modules | Confirmed by host-independent tests; rules outside supplied facts and target-build behavior unverified |
 | POC artifact mapping | `sts2-protocol/poc-v1` and its recorded schema digest | Confirmed local manifest/schema/fixture presence; no protocol implementation or runtime claim |
 | Game host/runtime | Not owned by this target | Unverified here; mod-owned evidence required |
 
@@ -25,6 +26,13 @@ The checked Runtime-v2 projection rejects turn indices above 1024 and generation
 compatibility guarantee.
 
 ## Compatibility classes
+
+PR #6's unreleased card-calculation safety correction replaces the bare generation argument with
+`&CombatSnapshot`. Recalculation now takes `&ValidatedPlayCard`, current facts, snapshot, and hand.
+Tokens are no longer `Copy`; they retain the bounded source facts. Callers must migrate these
+arguments together and handle actor/session/phase, malformed-hand and stale-observation errors.
+This changes no serialized contract. The model assumptions and validation order are recorded in
+[ADR 0006](decisions/0006-exact-calculators-and-belief-simulation.md).
 
 Classify every future change as one of:
 

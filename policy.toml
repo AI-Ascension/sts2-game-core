@@ -52,6 +52,14 @@ required_files = [
   ".github/pull_request_template.md",
   ".github/workflows/ci.yml",
   ".github/workflows/policy.yml",
+  "crates/core/src/calculators.rs",
+  "crates/core/src/play_card.rs",
+  "crates/core/src/probability.rs",
+  "crates/core/src/simulator.rs",
+  "crates/core/tests/combat_calculators.rs",
+  "crates/core/tests/play_card.rs",
+  "crates/core/tests/simulator_parity.rs",
+  "docs/decisions/0006-exact-calculators-and-belief-simulation.md",
 ]
 ignored_directories = [
   ".git",

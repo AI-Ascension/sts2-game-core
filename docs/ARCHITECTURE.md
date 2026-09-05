@@ -45,6 +45,10 @@ The initialized core package is split into cohesive modules:
 - **Identity** represents actor/session and generation scope without inferring identity from position.
 - **Validation** checks a proposal against a supplied snapshot and returns structured results.
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.
+- **Calculators** derive exact damage, resource, lethal, and survival facts from supplied visible
+  observations; they do not predict hidden outcomes.
+- **Belief simulation** enumerates only explicit caller-provided weighted states and labels every
+  result as an estimate rather than an authoritative transition.
 
 The current package is `sts2-game-core` at `crates/core`. It consumes only the checked-in
 `protocol-artifact/poc-v1` data and the source-schema/conformance mirrors named by that artifact

@@ -44,6 +44,17 @@ same validated proposal is evaluated against the newer snapshot. No test uses pe
 and leaves the original domain values unchanged. These tests do not serialize a message or establish
 consumer wire/runtime compatibility.
 
+`combat_calculators`, `play_card`, and `simulator_parity` cover exact visible damage/resource/
+survival facts, target and duplicate rejection, stale card generations, and explicit-belief weighted
+enumeration. They do not prove hidden game mechanics, future randomness, host legality, or live
+settlement.
+
+Card regression tests check foreign actor/session, wrong phase, validation precedence, bounded
+unique hand-instance identity, missing/changed cards, resource revalidation, and changed facts under
+the same generation. Calculator boundary tests use hand-computed maximum-width results and a
+small exhaustive survival truth table. Belief tests cover empty/zero/oversized distributions and
+maximum positive weights. These establish model arithmetic, not independent game-rule parity.
+
 ## Future core test layers
 
 - **Unit:** pure state, action, identity, generation, validation, error, and ordering behavior.
