@@ -4,8 +4,9 @@
 
 Wave 2 initializes the non-empty `sts2-game-core` package under `crates/core`. Its modules contain
 only typed semantic values and pure validation. The root Cargo workspace also builds the independent
-target-local governance tool. `schemas/domain`, `conformance`, and the root `tests` directory
-remain reserved for later project-owned contracts; do not fill them with placeholders.
+target-local governance tool. `schemas/domain` and the root `tests` directory remain reserved for
+later project-owned contracts; do not fill them with placeholders. The root POC schema and
+conformance case are exact protocol-owner mirrors, not new core-owned contracts.
 
 ## Rust and module rules
 

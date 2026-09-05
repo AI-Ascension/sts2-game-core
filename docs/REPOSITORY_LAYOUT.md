@@ -7,8 +7,8 @@ sts2-game-core/
 ├── .github/                    # bounded read-only CI and dependency automation
 ├── crates/core/                # initialized pure semantic product crate and deterministic tests
 ├── protocol-artifact/poc-v1/   # copied release-like protocol data, not implementation code
-├── schemas/domain/             # reserved owner-local semantic fixtures/shapes
-├── conformance/                # reserved project-owned contract cases
+├── schemas/                    # protocol POC schema mirror; domain/ remains reserved
+├── conformance/cases/          # protocol POC conformance data mirror
 ├── docs/                       # target policy, architecture, and decisions
 ├── tests/                      # reserved cross-module deterministic tests
 ├── tools/repo-policy/          # target-local Rust governance checker
@@ -16,7 +16,7 @@ sts2-game-core/
 └── Cargo.lock                  # locked workspace dependencies
 ```
 
-The root schemas, conformance, and tests directories remain responsibility markers. A future crate or
+The schemas/domain and root tests directories remain responsibility markers. A future crate or
 module may be added only with a named responsibility, consumer, build purpose, and non-empty test seam.
 
 ## Ownership and dependency direction

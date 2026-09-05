@@ -25,7 +25,13 @@ behavior.
 the mod double: initial generation 0/units 3 becomes generation 1/units 2/effects 1, while zero units
 is rejected and leaves the snapshot unchanged. The artifact check validates all five release-like
 golden message shapes and the invalid fixture against the copied metadata and checksum scope. It is
-data-only and does not import protocol implementation internals.
+data-only and does not import protocol implementation internals. The verifier checks all ten
+canonical inventory entries, including source-schema and conformance-case mirrors. Hash verification
+of the case proves byte identity, not execution of the protocol conformance suite. Also run:
+
+```bash
+(cd protocol-artifact/poc-v1 && sha256sum --check SHA256SUMS)
+```
 
 `valid_end_turn_settles_once_with_typed_witness` proves the frozen Runtime-v2 fake transition:
 `combat/player_turn`, generation 4, turn index 2 becomes generation 5, turn index 3 and remains in
