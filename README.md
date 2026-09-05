@@ -59,7 +59,8 @@ be project-owned, deterministic, exact-versioned, and clearly labeled `confirmed
 `proposed`, `inferred`, or `unverified`. Do not copy or retain proprietary game files or another
 implementation's source.
 
-Reserved areas are `schemas/domain`, `conformance`, the root `tests` directory, and `tools`.
+Reserved areas are `schemas/domain` and the root `tests` directory.
+`schemas/poc-v1.schema.json` and `conformance/cases/poc-v1.json` mirror protocol-owned data.
 They are not permission to create empty placeholder crates. The current target shape is documented in
 the [repository layout](docs/REPOSITORY_LAYOUT.md). The staged scope is recorded in the workspace
 planning corpus and is not a product dependency.

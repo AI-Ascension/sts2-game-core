@@ -52,3 +52,14 @@ Use `confirmed` for reproduced target evidence, `source-derived` for observation
 source/material, `proposed` for design, `inferred` for reasoned but untested conclusions, and
 `unverified` when a runtime or external precondition has not been executed. Never promote a static
 document, mock, or compile pass into a host/runtime claim.
+
+## Complete POC artifact inventory
+
+The POC package and mirrored source schema/conformance case are copied byte-for-byte from
+`AI-Ascension/sts2-protocol` main commit `11e4252e39a77f0017b8e4f3720590e6162e8f53`.
+The original eight consumer payloads remain unchanged. The canonical README and ten-entry
+`SHA256SUMS` replace the earlier consumer-specific packaging; neither is regenerated locally.
+The added root mirrors satisfy the inventory's relative paths and do not transfer schema or
+conformance authority to core. This is a packaging safety correction with no API or wire change.
+Byte checks establish artifact identity only; runtime and protocol-implementation parity remain
+unverified. Core still intentionally consumes no Runtime-v1/v2/v3 serialization artifact.

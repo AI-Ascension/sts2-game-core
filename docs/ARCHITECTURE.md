@@ -47,7 +47,8 @@ The initialized core package is split into cohesive modules:
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.
 
 The current package is `sts2-game-core` at `crates/core`. It consumes only the checked-in
-`protocol-artifact/poc-v1` data and has no path dependency on `sts2-protocol` or another product
+`protocol-artifact/poc-v1` data and the source-schema/conformance mirrors named by that artifact
+inventory, and has no path dependency on `sts2-protocol` or another product
 implementation. The root Cargo workspace also contains the independent governance checker.
 
 Validation can reject stale, malformed, or illegal input. It cannot authorize or perform a host

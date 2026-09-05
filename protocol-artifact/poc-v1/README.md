@@ -1,7 +1,7 @@
-# Consumed `poc-v1` artifact
+# `poc-v1` release-like artifact
 
-This is the exact offline release-like artifact copied from `sts2-protocol` PR #2 head
-`cad3c85d3cba3363ad387f9c26a3c3cac2782267`. The core maps its fields locally and never imports
-protocol implementation modules or a sibling path dependency. `SHA256SUMS` explicitly covers the
-eight copied schema, manifest, golden, and fixture files consumed by the core verifier; protocol
-source-schema and conformance evidence remain owner-local.
+This directory is the checked-in, offline artifact consumed by the five POC owners. The schema
+source is [`schemas/poc-v1.schema.json`](../../schemas/poc-v1.schema.json), and `schema.json` is a
+byte-identical package copy. The manifest's `schema_digest` identifies those exact schema bytes;
+`SHA256SUMS` covers the source, package, manifest, fixtures, and conformance case. The artifact is
+not a public release and does not establish game, host, network, or runtime compatibility.

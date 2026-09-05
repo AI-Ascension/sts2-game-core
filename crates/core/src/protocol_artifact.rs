@@ -19,6 +19,8 @@ const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
 const MANIFEST: &str = include_str!("../../../protocol-artifact/poc-v1/manifest.json");
 const CHECKSUMS: &str = include_str!("../../../protocol-artifact/poc-v1/SHA256SUMS");
 const SCHEMA: &str = include_str!("../../../protocol-artifact/poc-v1/schema.json");
+const SOURCE_SCHEMA: &str = include_str!("../../../schemas/poc-v1.schema.json");
+const CONFORMANCE: &str = include_str!("../../../conformance/cases/poc-v1.json");
 const STATE_REQUEST: &str =
     include_str!("../../../protocol-artifact/poc-v1/golden/state-request.json");
 const STATE_RESPONSE: &str =
@@ -31,7 +33,17 @@ const ACTION_REJECTED: &str =
     include_str!("../../../protocol-artifact/poc-v1/golden/action-rejected.json");
 const INVALID: &str =
     include_str!("../../../protocol-artifact/poc-v1/fixtures/invalid-action.json");
-const CHECKSUM_ENTRIES: [(&str, &str, &[u8]); 8] = [
+const CHECKSUM_ENTRIES: [(&str, &str, &[u8]); 10] = [
+    (
+        "../../conformance/cases/poc-v1.json",
+        "55fc488f4387d5eb9f0bd185f80b862c7dc00ca8fac2af5d43ee738d437ce627",
+        CONFORMANCE.as_bytes(),
+    ),
+    (
+        "../../schemas/poc-v1.schema.json",
+        POC_SCHEMA_DIGEST,
+        SOURCE_SCHEMA.as_bytes(),
+    ),
     (
         "fixtures/invalid-action.json",
         "29b245f9e0df6c6f158e82e7a770e90e8153b427b3e18e7b00c2340b7a812abf",
@@ -76,9 +88,9 @@ const CHECKSUM_ENTRIES: [(&str, &str, &[u8]); 8] = [
 
 /// Verifies the local copy of the protocol artifact before a POC mapping uses it.
 ///
-/// The checked-in inventory is matched to the eight copied payloads consumed by core, and each
-/// payload is hashed before its JSON metadata is inspected. Protocol-owner source and conformance
-/// inputs remain outside this consumer-scoped copy.
+/// The unchanged protocol-owner inventory is matched to ten copied payloads, including the source
+/// schema and conformance case mirrored at its relative paths. Each payload is hashed before
+/// message metadata is inspected; hashing the conformance case does not execute its assertions.
 ///
 /// # Errors
 ///

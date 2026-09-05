@@ -39,7 +39,8 @@ Semantic Versioning once versioned releases begin.
 
 ### Fixed
 
-- Nothing yet.
+- Preserve the complete protocol-owner POC artifact package and checksum inventory, including
+  source-schema and conformance mirrors, while leaving the original eight payloads unchanged.
 
 ### Security
 
