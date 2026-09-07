@@ -1,0 +1,65 @@
+schema_version = 1
+profile_id = "rust-pure"
+repository = "AI-Ascension/sts2-game-core"
+owner = "CORE"
+source_bundle = "AI-Ascension/.github"
+source_commit = "ce4ca6dc4a202a276cf5387ae5c43011e3bbe88f"
+source_digest = "sha256:af5c0138aff3356cb1bb520c90e61bfc68efc1f8d4fa6f436570e7e3b231190a"
+distribution = "local"
+scopes = ["rust"]
+
+[checks]
+fast = [
+    "git-diff-check",
+    "standards-validate",
+    "cargo-fmt",
+]
+required = [
+    "repo-policy-strict",
+    "cargo-clippy-production",
+    "cargo-clippy",
+    "cargo-test",
+    "cargo-doc-tests",
+]
+extended = []
+
+[checks.commands.cargo-clippy]
+command = "cargo clippy --workspace --all-targets --all-features --locked -- -D warnings"
+target = "."
+
+[checks.commands.cargo-clippy-production]
+command = "cargo clippy --workspace --lib --bins --all-features --locked -- -D warnings -F clippy::unwrap_used -F clippy::expect_used -F clippy::panic -F clippy::todo -F clippy::unimplemented"
+target = "."
+
+[checks.commands.cargo-doc-tests]
+command = "cargo test --workspace --all-features --doc --locked"
+target = "."
+
+[checks.commands.cargo-fmt]
+command = "cargo fmt --all --check"
+target = "."
+
+[checks.commands.cargo-test]
+command = "cargo test --workspace --all-targets --all-features --locked"
+target = "."
+
+[checks.commands.git-diff-check]
+command = "git diff --check"
+target = "."
+
+[checks.commands.repo-policy-strict]
+command = "cargo run --locked --package repo-policy -- --strict"
+target = "."
+
+[checks.commands.standards-validate]
+command = "cargo +1.97.1 run --locked --manifest-path standards/tools/standards-sync/Cargo.toml -- validate --root ."
+target = "."
+
+[evidence]
+runtime = "unverified"
+deployment = "unverified"
+provider = "unverified"
+
+[exceptions]
+file = ""
+status = "none"
