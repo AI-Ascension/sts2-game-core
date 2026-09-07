@@ -1,6 +1,22 @@
 // SPDX-License-Identifier: MIT
 
 //! Pure semantic values and validation for the STS2 domain boundary.
+//!
+//! A request is validated against an immutable snapshot before it is applied:
+//!
+//! ```
+//! use sts2_game_core::{Action, Generation, Identity, Phase, Request, State, validate};
+//!
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let owner = Identity::new(7).ok_or("example identity rejected")?;
+//! let state = State::new(owner, Generation::initial(), Phase::Open, 2);
+//! let request = Request::new(owner, state.generation(), Action::UseBudget { units: 1 });
+//! let accepted = validate(&state, &request).map_err(|_| "example request rejected")?;
+//! let next = state.apply(&accepted).map_err(|_| "example action rejected")?;
+//! assert_eq!(next.available_units(), 1);
+//! # Ok(())
+//! # }
+//! ```
 
 mod calculators;
 mod combat;

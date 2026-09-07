@@ -1,5 +1,12 @@
 // SPDX-License-Identifier: MIT
 
+#![allow(
+    clippy::expect_used,
+    clippy::panic,
+    clippy::unwrap_used,
+    reason = "fixture tests fail fast on invalid test data"
+)]
+
 use sts2_game_core::{
     CardSpec, CardTarget, CombatCalculationState, CombatPhase, CombatSnapshot, EnemyFacts,
     Generation, Identity, PlayCardRequest, PlayCardValidationError, SessionId, TargetDomain,

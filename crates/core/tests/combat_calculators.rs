@@ -1,5 +1,12 @@
 // SPDX-License-Identifier: MIT
 
+#![allow(
+    clippy::expect_used,
+    clippy::panic,
+    clippy::unwrap_used,
+    reason = "fixture tests fail fast on invalid test data"
+)]
+
 use sts2_game_core::{
     CardSpec, CardTarget, CombatCalculationState, EnemyFacts, TargetDomain, exact_card_damage,
     exact_end_turn_survival, exact_lethal, exact_resource_after_card,

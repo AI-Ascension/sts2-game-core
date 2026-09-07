@@ -28,7 +28,10 @@ governance tool is not product behavior and has no dependency on core or any sib
 | `LIC001-003` | MIT root/manifest declarations and source SPDX headers are present |
 | `BOUND001` | Future `crates/core` source cannot import known side-effecting boundaries |
 
-Preferred budgets are warnings in normal mode and failures in strict mode; hard limits always fail.
+Policy version 2 classifies findings explicitly: the default is mandatory and `SIZE001` preferred-size
+guidance is advisory. Strict mode fails mandatory findings and hard size limits while retaining
+advisory diagnostics. Policy version 1 remains available for legacy callers; its strict mode promotes
+every warning, so migration requires changing the version and adding the severity table deliberately.
 Exemptions are exact paths and require provenance/reason. Copied reference implementations are never
 eligible for exemption.
 
@@ -41,3 +44,13 @@ providers, or sibling repositories.
 
 Static policy cannot prove cohesive domain design, host behavior, runtime compatibility, or external
 branch protection. Review and deterministic tests remain necessary when product source is introduced.
+
+## Production lint scope
+
+The production Clippy lane selects workspace libraries and binaries and forbids
+unwrap, expect, panic, todo and unimplemented on the compiler command line.
+A source-level allowance cannot override that lane. The existing all-target lane
+still checks tests with their scoped allowances. `production_lints` runs real
+compiler fixtures for forbidden constructs, an attempted blanket allowance,
+and valid comments/test-only code. Missing Clippy or an unrelated compiler
+failure cannot satisfy a negative case: its diagnostic must identify the rule.

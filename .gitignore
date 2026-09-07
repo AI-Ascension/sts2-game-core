@@ -1,5 +1,6 @@
 # Rust and future build output
 target/
+standards/tools/standards-sync/target/
 **/*.rs.bk
 **/bin/
 **/obj/
