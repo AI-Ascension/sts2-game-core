@@ -3,7 +3,12 @@
   <img alt="AI-Ascension — Inspect how AI requests to a game get fenced, one Rust contract at a time. Runtime: unverified. Deterministic tests: confirmed." src="https://raw.githubusercontent.com/AI-Ascension/.github/main/profile/assets/banner-light.svg" width="100%">
 </picture>
 
-# sts2-game-core
+# STS2 Domain Core
+
+Part of [Ascension](https://github.com/AI-Ascension/sts2-harness), the AI
+Ascension flagship toolkit. The repository slug remains `sts2-game-core`
+until an approved rename; **The Climb — by AI Ascension** uses its bounded
+domain contracts when a run needs them.
 
 > **AI-Ascension · domain core (beside the ascent)** — Host-independent Rust domain core: typed game-state values, pure validation, and policy rules with no I/O.
 >
