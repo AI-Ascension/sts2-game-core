@@ -55,6 +55,10 @@ coordinator and experiment/artifact owner.
 Core also does not own operation receipts, duplicate/idempotency storage, timeout reconciliation, or
 retry policy. Those boundary decisions must be explicit when later consumers carry this action.
 
+The source/fixture status of campaign, terminal, and co-op concerns is recorded in
+[`CAMPAIGN_COOP_COVERAGE.md`](CAMPAIGN_COOP_COVERAGE.md). Unsupported rows are deliberately not
+represented by placeholder types.
+
 ## Contract and evidence rules
 
 Before adding a public value or rule, document success, rejection, stale-input behavior, error shape,

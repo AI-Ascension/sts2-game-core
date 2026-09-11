@@ -136,5 +136,57 @@ fn area_lethal_means_at_least_one_target_not_whole_encounter() {
         10
     );
     facts.enemies.clear();
-    assert!(!exact_lethal(&card, &facts, CardTarget::AllEnemies).unwrap());
+    assert_eq!(
+        exact_lethal(&card, &facts, CardTarget::AllEnemies),
+        Err(CalculatorError::InvalidTarget)
+    );
+}
+
+#[test]
+fn defeated_enemies_remain_observable_but_cannot_receive_actions() {
+    let mut facts = state();
+    facts.enemies = vec![
+        EnemyFacts {
+            enemy_id: 1,
+            hp: 0,
+            max_hp: 5,
+        },
+        EnemyFacts {
+            enemy_id: 2,
+            hp: 5,
+            max_hp: 5,
+        },
+    ];
+    let single_target = CardSpec {
+        card_id: 1,
+        cost: 0,
+        damage: 5,
+        hits: 1,
+        block: 0,
+        target: TargetDomain::SingleEnemy,
+    };
+    assert_eq!(
+        exact_card_damage(&single_target, &facts, CardTarget::Enemy(1)),
+        Err(CalculatorError::InvalidTarget)
+    );
+    let all_targets = CardSpec {
+        target: TargetDomain::AllEnemies,
+        ..single_target
+    };
+    assert_eq!(
+        exact_card_damage(&all_targets, &facts, CardTarget::AllEnemies)
+            .unwrap()
+            .damage,
+        5
+    );
+    assert!(exact_lethal(&all_targets, &facts, CardTarget::AllEnemies).unwrap());
+
+    facts.enemies[1].hp = 0;
+    assert_eq!(
+        exact_card_damage(&all_targets, &facts, CardTarget::AllEnemies),
+        Err(CalculatorError::InvalidTarget)
+    );
+
+    facts.enemies[1].max_hp = 0;
+    assert_eq!(facts.validate(), Err(CalculatorError::MalformedObservation));
 }

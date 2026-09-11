@@ -207,3 +207,34 @@ fn duplicate_invalid_and_oversized_hands_are_not_order_dependent() {
         Err(PlayCardValidationError::InvalidCard)
     );
 }
+
+#[test]
+fn action_admission_rejects_defeated_targets_but_preserves_mixed_observations() {
+    let mut facts = state();
+    facts.enemies[0].hp = 0;
+    assert_eq!(
+        validate_play_card(&facts, &snapshot(3), request(), &[card()]),
+        Err(PlayCardValidationError::InvalidTarget)
+    );
+
+    facts.enemies.push(EnemyFacts {
+        enemy_id: 9,
+        hp: 10,
+        max_hp: 10,
+    });
+    let all_targets = CardSpec {
+        target: TargetDomain::AllEnemies,
+        ..card()
+    };
+    let all_request = PlayCardRequest {
+        target: CardTarget::AllEnemies,
+        ..request()
+    };
+    assert!(validate_play_card(&facts, &snapshot(3), all_request, &[all_targets]).is_ok());
+
+    facts.enemies[1].hp = 0;
+    assert_eq!(
+        validate_play_card(&facts, &snapshot(3), all_request, &[all_targets]),
+        Err(PlayCardValidationError::InvalidTarget)
+    );
+}

@@ -10,6 +10,14 @@ pub struct EnemyFacts {
     pub max_hp: u16,
 }
 
+impl EnemyFacts {
+    /// Returns whether this enemy remains a valid combat-action target.
+    #[must_use]
+    pub const fn is_alive(self) -> bool {
+        self.hp > 0
+    }
+}
+
 /// Inputs to a simplified arithmetic model, copied from one coherent ordinary observation.
 /// Incoming damage must already include all relevant effects except this player's block.
 /// This type cannot represent damage modifiers, enemy block, healing, or triggered effects;
@@ -35,7 +43,7 @@ impl CombatCalculationState {
             return Err(CalculatorError::MalformedObservation);
         }
         for (index, enemy) in self.enemies.iter().enumerate() {
-            if enemy.enemy_id == 0 || enemy.hp > enemy.max_hp {
+            if enemy.enemy_id == 0 || enemy.max_hp == 0 || enemy.hp > enemy.max_hp {
                 return Err(CalculatorError::MalformedObservation);
             }
             if self.enemies[..index]
@@ -50,7 +58,7 @@ impl CombatCalculationState {
 }
 
 /// Nominal damage in the supplied model, not capped HP loss or proof of a host effect.
-/// All-enemy damage is summed over every supplied enemy; no target mitigation is modeled.
+/// All-enemy damage is summed over every living supplied enemy; no target mitigation is modeled.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ExactDamage {
     pub damage: u32,
@@ -120,8 +128,14 @@ pub fn exact_card_damage(
         CardTarget::AllEnemies | CardTarget::SelfPlayer | CardTarget::None => None,
     };
     let total = if card.target == TargetDomain::AllEnemies {
-        let enemy_count =
-            u32::try_from(state.enemies.len()).map_err(|_| CalculatorError::ArithmeticOverflow)?;
+        let enemy_count = u32::try_from(
+            state
+                .enemies
+                .iter()
+                .filter(|enemy| enemy.is_alive())
+                .count(),
+        )
+        .map_err(|_| CalculatorError::ArithmeticOverflow)?;
         damage
             .checked_mul(enemy_count)
             .ok_or(CalculatorError::ArithmeticOverflow)?
@@ -174,8 +188,9 @@ pub fn exact_end_turn_survival(
 }
 
 /// Checks nominal lethality in the supplied model, without target mitigation or other effects.
-/// For `AllEnemies`, returns whether at least one supplied enemy meets the damage threshold,
-/// not whether the entire encounter ends. Caller-supplied zero-HP entries also meet that threshold.
+/// For `AllEnemies`, returns whether at least one living supplied enemy meets the damage threshold,
+/// not whether the entire encounter ends. Defeated enemies remain observable but never count as
+/// targets or lethal candidates.
 ///
 /// # Errors
 ///
@@ -200,6 +215,7 @@ pub fn exact_lethal(
             Ok(state
                 .enemies
                 .iter()
+                .filter(|enemy| enemy.is_alive())
                 .any(|enemy| per_enemy >= u32::from(enemy.hp)))
         }
         CardTarget::SelfPlayer | CardTarget::None => Ok(false),
@@ -213,10 +229,17 @@ fn validate_target(
 ) -> Result<(), CalculatorError> {
     match (domain, target) {
         (TargetDomain::None, CardTarget::None)
-        | (TargetDomain::SelfPlayer, CardTarget::SelfPlayer)
-        | (TargetDomain::AllEnemies, CardTarget::AllEnemies) => Ok(()),
+        | (TargetDomain::SelfPlayer, CardTarget::SelfPlayer) => Ok(()),
+        (TargetDomain::AllEnemies, CardTarget::AllEnemies)
+            if state.enemies.iter().any(|enemy| enemy.is_alive()) =>
+        {
+            Ok(())
+        }
         (TargetDomain::SingleEnemy, CardTarget::Enemy(enemy_id))
-            if state.enemies.iter().any(|enemy| enemy.enemy_id == enemy_id) =>
+            if state
+                .enemies
+                .iter()
+                .any(|enemy| enemy.enemy_id == enemy_id && enemy.is_alive()) =>
         {
             Ok(())
         }
