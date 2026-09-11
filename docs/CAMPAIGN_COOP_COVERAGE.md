@@ -7,6 +7,10 @@ fixture coverage. It records a pure semantic package, not a host or protocol cap
 below means the named target-local test exercises the listed pure behavior; native game, multiplayer,
 transport, and runtime behavior remain **unverified**.
 
+“Unsupported in core” is an owner-seam status only. It does not narrow the intended whole-project
+campaign or native co-op support: those capabilities remain required at their owning host,
+control-plane, and integration boundaries.
+
 | Intended concern | Core source seam | Fixture/test oracle | Status and boundary |
 | --- | --- | --- | --- |
 | Actor, session, and generation freshness | `identity.rs`, `combat.rs`, `end_turn.rs`, `play_card.rs` | `end_turn.rs`, `play_card.rs`, `runtime_v2_projection.rs` | Confirmed component invariant for one actor/session snapshot; no peer roster or gateway fence. |
