@@ -21,6 +21,11 @@ The initial and Runtime-v2 seams are internal semantic contracts for this target
 game-mechanics compatibility promises. A successful policy, metadata, format, lint, or test run does
 not establish host/runtime compatibility. Runtime-v2 operation identity, receipt, reconciliation,
 and idempotency behavior remains a later boundary contract.
+The unreleased calculator contract is a safety correction: a defeated enemy (`hp == 0`) may remain
+in an observation but is not an action target, all-enemy arithmetic counts only living enemies, and
+zero maximum HP is malformed. Consumers of the pure calculator must refresh a terminal observation
+rather than issue an action against a defeated target. This is not a wire, host, or terminal-runtime
+compatibility claim.
 The checked Runtime-v2 projection rejects turn indices above 1024 and generations above
 `9_007_199_254_740_991`; it is a representational guard, not a protocol serialization or host
 compatibility guarantee.

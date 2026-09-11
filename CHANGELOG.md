@@ -47,6 +47,9 @@ Semantic Versioning once versioned releases begin.
 
 - Preserve the complete protocol-owner POC artifact package and checksum inventory, including
   source-schema and conformance mirrors, while leaving the original eight payloads unchanged.
+- Safety correction: exclude defeated enemies from card-action targeting and all-enemy arithmetic;
+  reject zero maximum HP as malformed. This changes only the unreleased pure calculator contract;
+  no wire contract or host behavior is claimed.
 
 ### Security
 
