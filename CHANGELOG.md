@@ -25,6 +25,8 @@ Semantic Versioning once versioned releases begin.
   above the safe-integer maximum `9_007_199_254_740_991` with typed errors.
 - Pure observation-derived card-play validation, exact combat/resource/survival calculators, and an
   explicit-belief simulator with separate estimate evidence.
+- A versioned, bounded rules-reference inventory with applicability, units, ordered steps,
+  lifecycle metadata, synthetic interaction fixtures, and explicit unsupported coverage.
 
 ### Changed
 

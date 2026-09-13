@@ -1,14 +1,35 @@
 // SPDX-License-Identifier: MIT
 
-/// A stable, host-independent identifier for one documented rule reference.
+//! Public types for the pure, versioned rules-reference model.
+
+/// Version of the core-owned rules-reference inventory.
+pub const RULES_REFERENCE_VERSION: u16 = 1;
+/// Bound on one collection lookup.
+pub const MAX_RULE_MATCHES: usize = 8;
+
+/// Stable identifiers for records in the inventory.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RuleId {
     NominalCardDamage,
     FixedCardCost,
     IncomingDamageAfterBlock,
+    SyntheticModifierOrdering,
 }
 
-/// Broad mechanic families deliberately distinguished from individual rule references.
+impl RuleId {
+    /// Returns the transport-neutral stable key.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::NominalCardDamage => "damage.nominal_card",
+            Self::FixedCardCost => "resource.fixed_card_cost",
+            Self::IncomingDamageAfterBlock => "block.incoming_after_block",
+            Self::SyntheticModifierOrdering => "damage.synthetic_modifier_ordering",
+        }
+    }
+}
+
+/// Mechanic families, including families tracked as unmodeled.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RuleFamily {
     Damage,
@@ -20,17 +41,58 @@ pub enum RuleFamily {
     Acquisition,
     DifficultyScaling,
     CoopScaling,
+    CardInteraction,
+    RelicInteraction,
+    PotionInteraction,
+    StatusInteraction,
     EntityInteraction,
 }
+/// Terminology alias for [`RuleFamily`].
+pub type Mechanic = RuleFamily;
 
-/// The evidence boundary for a rule. `SimplifiedModel` is never host-parity evidence.
+impl RuleFamily {
+    /// Returns a stable mechanic key.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Damage => "damage",
+            Self::ResourceCost => "resource_cost",
+            Self::Block => "block",
+            Self::Heal => "heal",
+            Self::CardMovement => "card_movement",
+            Self::TurnTiming => "turn_timing",
+            Self::Acquisition => "acquisition",
+            Self::DifficultyScaling => "difficulty_scaling",
+            Self::CoopScaling => "coop_scaling",
+            Self::CardInteraction => "card_interaction",
+            Self::RelicInteraction => "relic_interaction",
+            Self::PotionInteraction => "potion_interaction",
+            Self::StatusInteraction => "status_interaction",
+            Self::EntityInteraction => "entity_interaction",
+        }
+    }
+}
+
+/// Evidence classification. Synthetic values never claim native parity.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum EvidenceStatus {
     SimplifiedModel,
+    SyntheticFixture,
+    SourceDerived,
+    Confirmed,
+    Proposed,
+    Inferred,
     Unverified,
 }
-
-/// Whether a requested combination is represented by the bounded reference.
+/// Source/provenance classification.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SourceStatus {
+    Synthetic,
+    SourceDerived,
+    NativeComparison,
+    Unverified,
+}
+/// Coverage of the declared inputs and operations.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RuleSupport {
     Supported,
@@ -38,96 +100,205 @@ pub enum RuleSupport {
     Unsupported,
 }
 
-/// One ordered, declarative calculation step. It carries no host behavior.
+/// Content and build applicability scopes.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct RuleStep {
-    pub order: u8,
-    pub description: &'static str,
+pub enum ContentScope {
+    Any,
+    Named(&'static str),
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BuildScope {
+    Any,
+    Named(&'static str),
+}
+/// Mode labels accepted by the host-neutral metadata.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum GameMode {
+    Any,
+    Solo,
+    Cooperative,
+}
+/// Caller-provided content/build/mode context.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RuleContext<'a> {
+    pub content: &'a str,
+    pub build: &'a str,
+    pub mode: GameMode,
+}
+/// Applicability attached to a record.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RuleApplicability {
+    pub content: ContentScope,
+    pub build: BuildScope,
+    pub modes: &'static [GameMode],
 }
 
-/// A pure rules-reference record. It documents assumptions rather than asserting native parity.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct RuleReference {
-    pub id: RuleId,
-    pub family: RuleFamily,
-    pub evidence: EvidenceStatus,
-    pub support: RuleSupport,
-    pub assumptions: &'static str,
-    pub steps: &'static [RuleStep],
-}
-
-/// A bounded lookup result that makes an absent rule explicit.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum RuleLookup {
-    Found(RuleReference),
-    Unsupported {
-        family: RuleFamily,
-        reason: &'static str,
-    },
-}
-
-const DAMAGE_STEPS: &[RuleStep] = &[RuleStep {
-    order: 1,
-    description: "multiply visible card damage by visible hit count for one target",
-}];
-const COST_STEPS: &[RuleStep] = &[RuleStep {
-    order: 1,
-    description: "subtract the fixed visible card cost from visible energy",
-}];
-const BLOCK_STEPS: &[RuleStep] = &[RuleStep {
-    order: 1,
-    description: "subtract player block from caller-resolved incoming damage, saturating at zero",
-}];
-
-const RULES: &[RuleReference] = &[
-    RuleReference {
-        id: RuleId::NominalCardDamage,
-        family: RuleFamily::Damage,
-        evidence: EvidenceStatus::SimplifiedModel,
-        support: RuleSupport::Conditional,
-        assumptions: "This is per-target damage only; all-enemy aggregation, target mitigation, powers, statuses, triggers, rounding, and host effects are unrepresented.",
-        steps: DAMAGE_STEPS,
-    },
-    RuleReference {
-        id: RuleId::FixedCardCost,
-        family: RuleFamily::ResourceCost,
-        evidence: EvidenceStatus::SimplifiedModel,
-        support: RuleSupport::Conditional,
-        assumptions: "Cost is supplied as a fixed visible value; modifiers and alternative payments are unrepresented.",
-        steps: COST_STEPS,
-    },
-    RuleReference {
-        id: RuleId::IncomingDamageAfterBlock,
-        family: RuleFamily::Block,
-        evidence: EvidenceStatus::SimplifiedModel,
-        support: RuleSupport::Conditional,
-        assumptions: "Incoming damage is caller-resolved; only player block is applied and no prevention or healing occurs.",
-        steps: BLOCK_STEPS,
-    },
-];
-
-/// Returns the documented record for an exact rule identifier.
-#[must_use]
-pub fn rules_for(id: RuleId) -> RuleLookup {
-    match RULES.iter().copied().find(|rule| rule.id == id) {
-        Some(rule) => RuleLookup::Found(rule),
-        None => RuleLookup::Unsupported {
-            family: RuleFamily::EntityInteraction,
-            reason: "no rule record is available",
-        },
+impl RuleApplicability {
+    /// Checks all applicability dimensions.
+    #[must_use]
+    pub fn matches(self, context: RuleContext<'_>) -> bool {
+        let content_matches = match self.content {
+            ContentScope::Any => true,
+            ContentScope::Named(expected) => expected == context.content,
+        };
+        let build_matches = match self.build {
+            BuildScope::Any => true,
+            BuildScope::Named(expected) => expected == context.build,
+        };
+        let mode_matches = self
+            .modes
+            .iter()
+            .any(|candidate| *candidate == GameMode::Any || *candidate == context.mode);
+        content_matches && build_matches && mode_matches
     }
 }
 
-impl RuleFamily {
-    /// Returns all records for a mechanic family, or an explicit unsupported outcome.
+/// Units for rule inputs.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RuleUnit {
+    Damage,
+    HitPoints,
+    Block,
+    Energy,
+    Count,
+    Turns,
+    Rounds,
+    Gold,
+    Multiplier,
+    Ratio,
+    Entity,
+    Boolean,
+    Dimensionless,
+}
+/// One declared rule input.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RuleInput {
+    pub name: &'static str,
+    pub unit: RuleUnit,
+    pub required: bool,
+    pub description: &'static str,
+}
+/// Kind of an ordered operation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RuleStepKind {
+    Calculation,
+    Rounding,
+    Targeting,
+    Trigger,
+    StateChange,
+}
+/// Declarative operation in an ordered step.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RuleOperation {
+    Add,
+    Multiply,
+    Subtract,
+    Divide,
+    Clamp,
+    Round,
+    SelectTarget,
+    EmitTrigger,
+    Move,
+    SetExpiry,
+}
+/// One ordered calculation or trigger step.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RuleStep {
+    pub order: u8,
+    pub kind: RuleStepKind,
+    pub operation: RuleOperation,
+    pub description: &'static str,
+}
+/// Rounding policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RoundingRule {
+    None,
+    Floor,
+    Ceil,
+    HalfUp,
+    HalfEven,
+    NotRepresented,
+}
+/// Targeting policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TargetingRule {
+    None,
+    SingleEnemy,
+    AllLivingEnemies,
+    SelfPlayer,
+    CallerResolved,
+    NotRepresented,
+}
+/// Repeated-effect stack policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum StackRule {
+    NotApplicable,
+    Additive,
+    Multiplicative,
+    Replace,
+    NotRepresented,
+}
+/// Effect expiry policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ExpiryRule {
+    Immediate,
+    EndOfTurn,
+    EndOfRound,
+    UntilRemoved,
+    NotRepresented,
+}
+/// Entity namespace used by related-reference lookups.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum EntityKind {
+    Card,
+    Relic,
+    Potion,
+    Status,
+    Enemy,
+    Player,
+    Rule,
+}
+/// A transport-neutral entity key.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct EntityReference<'a> {
+    pub kind: EntityKind,
+    pub id: &'a str,
+}
+
+/// One pure rules-reference record.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RuleReference {
+    pub version: u16,
+    pub id: RuleId,
+    pub family: RuleFamily,
+    pub mechanic: Mechanic,
+    pub applicability: RuleApplicability,
+    pub inputs: &'static [RuleInput],
+    pub steps: &'static [RuleStep],
+    pub rounding: RoundingRule,
+    pub targeting: TargetingRule,
+    pub stacking: StackRule,
+    pub expiry: ExpiryRule,
+    pub entities: &'static [EntityReference<'static>],
+    pub related_rules: &'static [RuleId],
+    pub evidence: EvidenceStatus,
+    pub source: SourceStatus,
+    pub source_ref: &'static str,
+    pub support: RuleSupport,
+    pub assumptions: &'static str,
+}
+
+impl RuleReference {
+    /// Checks this record's content/build/mode scope.
     #[must_use]
-    pub fn lookup(self) -> RuleLookup {
-        match RULES.iter().copied().find(|rule| rule.family == self) {
-            Some(rule) => RuleLookup::Found(rule),
-            None => RuleLookup::Unsupported {
-                family: self,
-                reason: "this rule family has no evidence-qualified reference",
-            },
-        }
+    pub fn applies_to(self, context: RuleContext<'_>) -> bool {
+        self.applicability.matches(context)
+    }
+    /// Checks whether this record names an entity.
+    #[must_use]
+    pub fn references(self, entity: EntityReference<'_>) -> bool {
+        self.entities
+            .iter()
+            .any(|candidate| candidate.kind == entity.kind && candidate.id == entity.id)
     }
 }
