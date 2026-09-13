@@ -49,6 +49,12 @@ survival facts, target and duplicate rejection, stale card generations, and expl
 enumeration. They do not prove hidden game mechanics, future randomness, host legality, or live
 settlement.
 
+`rules_reference` distinguishes the existing `SimplifiedModel` calculator records from the
+`SyntheticFixture` interaction record, checks content/build/mode applicability, units, ordered
+steps, rounding, targeting, stacking, expiry, and bounded ID/mechanic/entity lookup. Every
+unmodeled family and compound query returns an explicit unsupported result. The interaction fixture
+is project-owned synthetic arithmetic; it is not a host-parity comparison.
+
 Card regression tests check foreign actor/session, wrong phase, validation precedence, bounded
 unique hand-instance identity, missing/changed cards, resource revalidation, and changed facts under
 the same generation. Calculator boundary tests use hand-computed maximum-width results and a

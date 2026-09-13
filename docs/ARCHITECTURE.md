@@ -47,6 +47,8 @@ The initialized core package is split into cohesive modules:
 - **Policy** defines deterministic ordering and failure precedence where the core contract requires it.
 - **Calculators** derive exact damage, resource, lethal, and survival facts from supplied visible
   observations; they do not predict hidden outcomes.
+- **Rules reference** provides versioned, declarative mechanic metadata and bounded evidence labels;
+  it reports conditional or unsupported coverage instead of fabricating omitted mechanics.
 - **Belief simulation** enumerates only explicit caller-provided weighted states and labels every
   result as an estimate rather than an authoritative transition.
 

@@ -10,6 +10,10 @@ mod play_card;
 mod probability;
 mod protocol_artifact;
 mod rules_reference;
+mod rules_reference_catalog;
+mod rules_reference_data;
+mod rules_reference_lookup;
+mod rules_reference_query;
 mod runtime_v2;
 mod simulator;
 mod state;
@@ -35,7 +39,18 @@ pub use protocol_artifact::{
     ArtifactError, POC_ARTIFACT, POC_PROTOCOL_VERSION, POC_SCHEMA_DIGEST, verify_poc_artifact,
 };
 pub use rules_reference::{
-    EvidenceStatus, RuleFamily, RuleId, RuleLookup, RuleReference, RuleStep, RuleSupport, rules_for,
+    BuildScope, ContentScope, EntityKind, EntityReference, EvidenceStatus, ExpiryRule, GameMode,
+    MAX_RULE_MATCHES, Mechanic, RULES_REFERENCE_VERSION, RoundingRule, RuleApplicability,
+    RuleContext, RuleFamily, RuleId, RuleInput, RuleOperation, RuleReference, RuleStep,
+    RuleStepKind, RuleSupport, RuleUnit, SourceStatus, StackRule, TargetingRule,
+};
+pub use rules_reference_lookup::{
+    coverage_for, coverage_inventory, lookup, lookup_rules, rule_inventory, rules_for,
+    rules_for_entity, rules_for_mechanic,
+};
+pub use rules_reference_query::{
+    RuleCollectionLookup, RuleCoverageStatus, RuleFamilyCoverage, RuleLookup, RuleMatches,
+    RuleQuery, SYNTHETIC_MODIFIER_FIXTURE, SyntheticDamageFixture,
 };
 pub use runtime_v2::{
     RUNTIME_V2_MAX_GENERATION, RUNTIME_V2_MAX_TURN_INDEX, RuntimeV2Generation,
