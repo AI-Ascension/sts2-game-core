@@ -7,9 +7,9 @@
 
 The core package owns a bounded, pure rules-reference inventory. Each record has a stable rule ID,
 mechanic family, ordered calculation steps, assumptions, support state, and evidence status. The
-initial records describe only the existing calculator model: nominal card damage, fixed card cost,
-and incoming damage after player block. They are `SimplifiedModel` and `Conditional`, never
-host-parity rules.
+initial records describe only the existing calculator model: per-target nominal card damage, fixed
+card cost, and incoming damage after player block. All-enemy aggregation is not described by the
+damage record. They are `SimplifiedModel` and `Conditional`, never host-parity rules.
 
 Unsupported families are returned explicitly: healing, card movement, turn timing, acquisition,
 difficulty/co-op scaling, and card/relic/potion/status interactions have no evidence-qualified

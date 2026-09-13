@@ -10,6 +10,11 @@ fn documented_calculators_are_never_promoted_to_host_parity() {
     assert_eq!(rule.evidence, EvidenceStatus::SimplifiedModel);
     assert_eq!(rule.support, RuleSupport::Conditional);
     assert_eq!(rule.steps[0].order, 1);
+    assert_eq!(
+        rule.steps[0].description,
+        "multiply visible card damage by visible hit count for one target"
+    );
+    assert!(rule.assumptions.contains("per-target damage only"));
 }
 
 #[test]

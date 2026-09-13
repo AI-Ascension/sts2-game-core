@@ -68,7 +68,7 @@ pub enum RuleLookup {
 
 const DAMAGE_STEPS: &[RuleStep] = &[RuleStep {
     order: 1,
-    description: "multiply visible card damage by visible hit count",
+    description: "multiply visible card damage by visible hit count for one target",
 }];
 const COST_STEPS: &[RuleStep] = &[RuleStep {
     order: 1,
@@ -85,7 +85,7 @@ const RULES: &[RuleReference] = &[
         family: RuleFamily::Damage,
         evidence: EvidenceStatus::SimplifiedModel,
         support: RuleSupport::Conditional,
-        assumptions: "No target mitigation, powers, statuses, triggers, rounding, or host effects are represented.",
+        assumptions: "This is per-target damage only; all-enemy aggregation, target mitigation, powers, statuses, triggers, rounding, and host effects are unrepresented.",
         steps: DAMAGE_STEPS,
     },
     RuleReference {
