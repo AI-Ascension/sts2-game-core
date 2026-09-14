@@ -174,32 +174,43 @@ fn entity_lookup_is_bounded_and_matches_record_metadata() {
 
 #[test]
 fn confirmed_synthetic_rules_are_distinguished_from_simplified_estimates() {
-    let mut confirmed = 0;
-    let mut simplified = 0;
+    every_record_declares_a_guarded_evidence_class();
+}
+
+#[test]
+fn every_record_declares_a_guarded_evidence_class() {
+    let mut counts = [0usize; 3];
     for rule in rule_inventory() {
         assert!(!rule.claims_native_source(), "{:?}", rule.id);
         assert!(!rule.unmodeled.is_empty(), "{:?}", rule.id);
         match rule.evidence {
             EvidenceStatus::Confirmed => {
-                confirmed += 1;
-                assert_eq!(rule.source, SourceStatus::Synthetic);
-                assert_eq!(rule.support, RuleSupport::Supported);
+                counts[0] += 1;
+                assert_eq!(rule.source, SourceStatus::Synthetic, "{:?}", rule.id);
+                assert_eq!(rule.support, RuleSupport::Supported, "{:?}", rule.id);
                 assert!(
                     rule.assumptions.contains("not host parity evidence"),
-                    "{:?} must disclaim host parity",
+                    "{:?}",
                     rule.id
                 );
             }
             EvidenceStatus::SimplifiedModel => {
-                simplified += 1;
-                assert_eq!(rule.source, SourceStatus::Synthetic);
-                assert_eq!(rule.support, RuleSupport::Conditional);
+                counts[1] += 1;
+                assert_eq!(rule.source, SourceStatus::Synthetic, "{:?}", rule.id);
+                assert_eq!(rule.support, RuleSupport::Conditional, "{:?}", rule.id);
+                assert!(!rule.assumptions.is_empty(), "{:?}", rule.id);
             }
-            _ => {}
+            EvidenceStatus::SyntheticFixture => {
+                counts[2] += 1;
+                assert_eq!(rule.source, SourceStatus::Synthetic, "{:?}", rule.id);
+                assert_eq!(rule.support, RuleSupport::Conditional, "{:?}", rule.id);
+                assert!(!rule.assumptions.is_empty(), "{:?}", rule.id);
+            }
+            other => panic!("unguarded evidence class {other:?} for {:?}", rule.id),
         }
     }
-    assert_eq!(confirmed, 11);
-    assert_eq!(simplified, 3);
+    assert_eq!(counts, [11, 3, 2]);
+    assert_eq!(counts.iter().sum::<usize>(), rule_inventory().len());
 }
 
 #[test]
