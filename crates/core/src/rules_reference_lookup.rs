@@ -1,23 +1,29 @@
 // SPDX-License-Identifier: MIT
 
-use super::rules_reference::{
-    EntityKind, EntityReference, Mechanic, RuleContext, RuleFamily, RuleId, RuleReference,
-    RuleSupport,
-};
+//! Bounded lookup over the pure rules-reference inventory.
+//!
+//! A query answers only within established coverage. An unmodeled family returns `Unsupported`,
+//! a family with remaining exclusions returns `Conditional`, and nothing converts an unknown
+//! request into a zero, an empty description, or a successful partial result.
+
+use super::rules_reference::{RuleContext, RuleReference, RuleSupport};
 use super::rules_reference_catalog as catalog;
-use super::rules_reference_query::{ALL_FAMILIES, FAMILY_COVERAGE};
+use super::rules_reference_coverage as coverage;
+use super::rules_reference_coverage::UnmodeledCombination;
+use super::rules_reference_ids::RuleId;
+use super::rules_reference_index as index;
 use super::rules_reference_query::{
-    RuleCollectionLookup, RuleCoverageStatus, RuleFamilyCoverage, RuleLookup, RuleMatches,
-    RuleQuery,
+    RuleCollectionLookup, RuleFamilyCoverage, RuleLookup, RuleMatches, RuleQuery,
 };
+use super::rules_reference_vocab::{EntityKind, EntityReference, RuleFamily};
 
 /// Returns one exact record, or an explicit unsupported result.
 #[must_use]
 pub fn rules_for(id: RuleId) -> RuleLookup {
-    match catalog::RULES.iter().copied().find(|rule| rule.id == id) {
+    match catalog::find(id) {
         Some(rule) => RuleLookup::Found(rule),
         None => RuleLookup::Unsupported {
-            family: RuleFamily::EntityInteraction,
+            family: id.family(),
             reason: "no rule record is available",
         },
     }
@@ -29,111 +35,63 @@ pub const fn rule_inventory() -> &'static [RuleReference] {
     catalog::RULES
 }
 
-/// Returns a family row with remaining exclusions.
+/// Returns a family row with its remaining exclusions.
 #[must_use]
 pub fn coverage_for(family: RuleFamily) -> RuleFamilyCoverage {
-    if let Some(row) = FAMILY_COVERAGE.iter().find(|row| row.family == family) {
-        return *row;
-    }
-    RuleFamilyCoverage {
+    coverage::coverage_row(family).unwrap_or(RuleFamilyCoverage {
         family,
-        status: RuleCoverageStatus::Unmodeled,
-        rules: catalog::NO_IDS,
+        status: super::rules_reference_query::RuleCoverageStatus::Unmodeled,
+        rules: &[],
         unmodeled: "no evidence-qualified record is available",
-    }
+    })
 }
 
 /// Returns every family tracked by this inventory.
 #[must_use]
 pub const fn coverage_inventory() -> &'static [RuleFamily] {
-    ALL_FAMILIES
+    coverage::ALL_FAMILIES
 }
 
-/// Looks up all records indexed by one mechanic.
+/// Returns the explicitly unmodeled combinations recorded for one family.
 #[must_use]
-pub fn rules_for_mechanic(mechanic: Mechanic) -> RuleCollectionLookup {
-    match mechanic {
-        RuleFamily::Damage => RuleCollectionLookup::Conditional {
-            matches: RuleMatches {
-                rules: catalog::DAMAGE_RULES,
-            },
-            reason: "damage records omit mitigation, triggers, and cross-family combinations",
-        },
-        RuleFamily::ResourceCost => RuleCollectionLookup::Conditional {
-            matches: RuleMatches {
-                rules: catalog::COST_RULES,
-            },
-            reason: "resource-cost records omit modifiers and alternative payments",
-        },
-        RuleFamily::Block => RuleCollectionLookup::Conditional {
-            matches: RuleMatches {
-                rules: catalog::BLOCK_RULES,
-            },
-            reason: "block records omit prevention, healing, and death replacement",
-        },
-        family => RuleCollectionLookup::Unsupported {
-            family,
-            reason: "this mechanic has no evidence-qualified record in the bounded inventory",
-        },
-    }
+pub fn unmodeled_combinations(family: RuleFamily) -> &'static [UnmodeledCombination] {
+    coverage::exclusions_for_family(family)
 }
 
-/// Looks up records related to one card, relic, status, or rule key.
+/// Returns the unmodeled combinations declared by one record.
+#[must_use]
+pub fn unmodeled_for(id: RuleId) -> Option<&'static [&'static str]> {
+    catalog::find(id).map(|rule| rule.unmodeled)
+}
+
+/// Looks up every record indexed by one mechanic.
+#[must_use]
+pub fn rules_for_mechanic(mechanic: RuleFamily) -> RuleCollectionLookup {
+    collection(catalog::family_slice(mechanic), mechanic)
+}
+
+/// Looks up records by one card, relic, potion, status, enemy, player, or rule reference.
 #[must_use]
 pub fn rules_for_entity(entity: EntityReference<'_>) -> RuleCollectionLookup {
-    match (entity.kind, entity.id) {
-        (EntityKind::Card, "card.definition") => conditional(
-            catalog::CARD_RULES,
-            "card references cover only nominal damage and fixed cost",
-        ),
-        (EntityKind::Card, "synthetic.card.multi_hit")
-        | (EntityKind::Relic, "synthetic.relic.flat_damage")
-        | (EntityKind::Status, "synthetic.status.multiplier") => conditional(
-            catalog::SYNTHETIC_RULES,
-            "synthetic interaction coverage is conditional and has no native evidence",
-        ),
-        (EntityKind::Rule, "damage.nominal_card") => conditional(
-            catalog::NOMINAL_RULES,
-            "the referenced rule remains a simplified conditional model",
-        ),
-        (EntityKind::Rule, "resource.fixed_card_cost") => conditional(
-            catalog::FIXED_COST_RULES,
-            "the referenced rule remains a simplified conditional model",
-        ),
-        (EntityKind::Rule, "block.incoming_after_block") => conditional(
-            catalog::INCOMING_BLOCK_RULES,
-            "the referenced rule remains a simplified conditional model",
-        ),
-        (EntityKind::Rule, "damage.synthetic_modifier_ordering") => conditional(
-            catalog::SYNTHETIC_ORDERING_RULES,
-            "the referenced rule is synthetic and has no native evidence",
-        ),
-        (EntityKind::Player, "player") => conditional(
-            catalog::BLOCK_RULES,
-            "player references cover only incoming damage after visible block",
-        ),
-        _ => unsupported_entity(entity.kind),
+    if entity.kind == EntityKind::Rule {
+        return match catalog::RULES
+            .iter()
+            .copied()
+            .find(|rule| rule.id.matches_key(entity.id))
+        {
+            Some(rule) => rule_result(rule),
+            None => RuleCollectionLookup::Unsupported {
+                family: RuleFamily::EntityInteraction,
+                reason: "no rule record carries this rule reference",
+            },
+        };
     }
-}
-
-fn conditional(rules: &'static [RuleReference], reason: &'static str) -> RuleCollectionLookup {
-    RuleCollectionLookup::Conditional {
-        matches: RuleMatches { rules },
-        reason,
-    }
-}
-
-fn unsupported_entity(kind: EntityKind) -> RuleCollectionLookup {
-    let family = match kind {
-        EntityKind::Card => RuleFamily::CardInteraction,
-        EntityKind::Relic => RuleFamily::RelicInteraction,
-        EntityKind::Potion => RuleFamily::PotionInteraction,
-        EntityKind::Status => RuleFamily::StatusInteraction,
-        EntityKind::Rule | EntityKind::Enemy | EntityKind::Player => RuleFamily::EntityInteraction,
-    };
-    RuleCollectionLookup::Unsupported {
-        family,
-        reason: "no rule record names this entity reference",
+    match index::find(entity) {
+        Some(rules) => collection(rules, family_for_entity(entity.kind)),
+        None => RuleCollectionLookup::Unsupported {
+            family: family_for_entity(entity.kind),
+            reason: "no rule record names this entity reference",
+        },
     }
 }
 
@@ -173,10 +131,49 @@ pub fn lookup(query: RuleQuery<'_>) -> RuleCollectionLookup {
     lookup_rules(query)
 }
 
-fn unsupported(reason: &'static str) -> RuleCollectionLookup {
-    RuleCollectionLookup::Unsupported {
-        family: RuleFamily::EntityInteraction,
-        reason,
+fn collection(rules: &'static [RuleReference], family: RuleFamily) -> RuleCollectionLookup {
+    if rules.is_empty() {
+        return RuleCollectionLookup::Unsupported {
+            family,
+            reason: family_reason(family),
+        };
+    }
+    let all_supported = rules
+        .iter()
+        .all(|rule| rule.support == RuleSupport::Supported);
+    if all_supported && !coverage::has_unmodeled_combinations(family) {
+        return RuleCollectionLookup::Found(RuleMatches { rules });
+    }
+    RuleCollectionLookup::Conditional {
+        matches: RuleMatches { rules },
+        reason: family_reason(family),
+    }
+}
+
+fn rule_result(rule: RuleReference) -> RuleCollectionLookup {
+    let Some(rules) = catalog::slice_of(rule.id) else {
+        return unsupported("no rule record is available");
+    };
+    let matches = RuleMatches { rules };
+    match rule.support {
+        RuleSupport::Unsupported => RuleCollectionLookup::Unsupported {
+            family: rule.family,
+            reason: "the rule record is marked unsupported",
+        },
+        RuleSupport::Conditional => RuleCollectionLookup::Conditional {
+            matches,
+            reason: rule.assumptions,
+        },
+        RuleSupport::Supported => {
+            if coverage::has_unmodeled_combinations(rule.family) {
+                RuleCollectionLookup::Conditional {
+                    matches,
+                    reason: family_reason(rule.family),
+                }
+            } else {
+                RuleCollectionLookup::Found(matches)
+            }
+        }
     }
 }
 
@@ -192,23 +189,27 @@ fn lookup_rule_id(rule_id: RuleId, context: Option<RuleContext<'_>>) -> RuleColl
             reason: "rule applicability excludes the supplied content/build/mode",
         };
     }
-    let rules = match rule_id {
-        RuleId::NominalCardDamage => catalog::NOMINAL_RULES,
-        RuleId::FixedCardCost => catalog::FIXED_COST_RULES,
-        RuleId::IncomingDamageAfterBlock => catalog::INCOMING_BLOCK_RULES,
-        RuleId::SyntheticModifierOrdering => catalog::SYNTHETIC_ORDERING_RULES,
-    };
-    let matches = RuleMatches { rules };
-    match rule.support {
-        RuleSupport::Supported => RuleCollectionLookup::Found(matches),
-        RuleSupport::Conditional => RuleCollectionLookup::Conditional {
-            matches,
-            reason: rule.assumptions,
-        },
-        RuleSupport::Unsupported => RuleCollectionLookup::Unsupported {
-            family: rule.family,
-            reason: "the rule record is marked unsupported",
-        },
+    rule_result(rule)
+}
+
+fn family_reason(family: RuleFamily) -> &'static str {
+    coverage::coverage_row(family).map_or("coverage is conditional", |row| row.unmodeled)
+}
+
+fn family_for_entity(kind: EntityKind) -> RuleFamily {
+    match kind {
+        EntityKind::Card => RuleFamily::CardInteraction,
+        EntityKind::Relic => RuleFamily::RelicInteraction,
+        EntityKind::Potion => RuleFamily::PotionInteraction,
+        EntityKind::Status => RuleFamily::StatusInteraction,
+        EntityKind::Enemy | EntityKind::Player | EntityKind::Rule => RuleFamily::EntityInteraction,
+    }
+}
+
+fn unsupported(reason: &'static str) -> RuleCollectionLookup {
+    RuleCollectionLookup::Unsupported {
+        family: RuleFamily::EntityInteraction,
+        reason,
     }
 }
 

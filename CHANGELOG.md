@@ -27,6 +27,15 @@ Semantic Versioning once versioned releases begin.
   explicit-belief simulator with separate estimate evidence.
 - A versioned, bounded rules-reference inventory with applicability, units, ordered steps,
   lifecycle metadata, synthetic interaction fixtures, and explicit unsupported coverage.
+- Rules-reference inventory version `2`: damage, resource cost, block, healing, card movement,
+  turn/round timing, acquisition, difficulty scaling, co-op scaling, and card/relic/potion/status
+  interaction records, each with declared inputs/units, ordered steps, rounding, targeting,
+  stack/expiry policy, and its own list of unmodeled combinations.
+- Bounded lookup by mechanic, by card/relic/potion/status/enemy/player entity, and by rule
+  reference, plus a family-level inventory of remaining unmodeled combinations.
+- Deterministic fixtures that separate `SimplifiedModel` estimates from `Confirmed` synthetic rules,
+  confirm declared ordering/rounding under interacting modifiers, and return no value outside
+  declared coverage.
 
 ### Changed
 
@@ -36,6 +45,9 @@ Semantic Versioning once versioned releases begin.
   receipt storage, and host execution at later owning boundaries.
 - Existing domain constructors remain unchanged; representational bounds are enforced only by the
   explicit Runtime-v2 projection.
+- The rules-reference inventory keeps core pure and claims no host parity: `Confirmed` records mean
+  a project-owned deterministic fixture reproduced the declared pure arithmetic, and no record uses
+  a native-comparison source label. The unresolved combinations are recorded rather than estimated.
 
 ### Deprecated
 

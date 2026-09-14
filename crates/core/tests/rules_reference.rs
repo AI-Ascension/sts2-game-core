@@ -35,14 +35,18 @@ fn documented_calculators_are_never_promoted_to_host_parity() {
 }
 
 #[test]
-fn unmodeled_families_are_explicitly_unsupported() {
-    assert!(matches!(
-        RuleFamily::Heal.lookup(),
-        RuleLookup::Unsupported { .. }
-    ));
+fn unmodeled_family_and_unknown_entity_queries_are_explicitly_unsupported() {
     assert!(matches!(
         RuleFamily::EntityInteraction.lookup(),
         RuleLookup::Unsupported { .. }
+    ));
+    assert_eq!(
+        coverage_for(RuleFamily::EntityInteraction).status,
+        RuleCoverageStatus::Unmodeled
+    );
+    assert!(matches!(
+        rules_for_mechanic(RuleFamily::EntityInteraction),
+        RuleCollectionLookup::Unsupported { .. }
     ));
     for family in [
         RuleFamily::Heal,
@@ -56,11 +60,8 @@ fn unmodeled_families_are_explicitly_unsupported() {
         RuleFamily::PotionInteraction,
         RuleFamily::StatusInteraction,
     ] {
-        assert_eq!(coverage_for(family).status, RuleCoverageStatus::Unmodeled);
-        assert!(matches!(
-            rules_for_mechanic(family),
-            RuleCollectionLookup::Unsupported { .. }
-        ));
+        assert_eq!(coverage_for(family).status, RuleCoverageStatus::Partial);
+        assert!(rules_for_mechanic(family).matches().is_some());
     }
 }
 

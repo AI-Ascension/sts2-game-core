@@ -34,3 +34,7 @@ freeze the pending game-information protocol profile. A later accepted protocol 
 game-mod content-manifest evidence are required before a consumer exposes these records. Tests
 establish deterministic metadata and synthetic arithmetic only; native rule parity remains
 unverified.
+
+Version `2` of this inventory broadens the record families, adds bounded mechanic/entity/rule
+lookup, and records remaining exclusions explicitly; see
+[ADR 0008](0008-rule-family-coverage-and-exclusions.md).
