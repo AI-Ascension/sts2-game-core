@@ -20,6 +20,7 @@ control-plane, and integration boundaries.
 | Player defeat calculation | `calculators.rs` | `calculation_bounds.rs::survival_matches_integer_balance_for_all_small_inputs` | Confirmed arithmetic result only; no campaign Defeat terminal representation. |
 | Encounter victory / campaign terminal | None | None | Unsupported in core: no Victory/Defeat/terminal-state type or terminal action policy. Requires named game-mod producer and consumer contract. |
 | Characters, seeds, map branches, rewards, shops, events, rest sites | None | None | Unsupported in core; host-observation/campaign ownership must be agreed before a domain contract is added. |
+| Enemy hit-point scaling for a declared participant count | `rules_reference_coverage.rs` (declared pure record) | `rules_reference_coverage.rs` | Source-derived declaration only: integer scaling with half-up rounding is confirmed for the declared inputs. Peer roster, shared decisions, and per-player rewards remain unsupported in core. |
 | Multiplayer peer identity/admission | None | None | Unsupported in core; `Identity` is an action actor, not a peer-admission model. Gateway and game-mod own admission/fencing. |
 | Shared decisions, votes, effects, disagreement | None | None | Unsupported in core; no shared-decision state or deterministic resolution policy exists. |
 | Disconnect, rejoin, restart, recovery | None | None | Unsupported in core; lifecycle, receipts, and reconciliation are explicitly boundary-owned. |

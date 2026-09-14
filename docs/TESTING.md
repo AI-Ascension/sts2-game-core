@@ -49,11 +49,25 @@ survival facts, target and duplicate rejection, stale card generations, and expl
 enumeration. They do not prove hidden game mechanics, future randomness, host legality, or live
 settlement.
 
-`rules_reference` distinguishes the existing `SimplifiedModel` calculator records from the
-`SyntheticFixture` interaction record, checks content/build/mode applicability, units, ordered
-steps, rounding, targeting, stacking, expiry, and bounded ID/mechanic/entity lookup. Every
-unmodeled family and compound query returns an explicit unsupported result. The interaction fixture
-is project-owned synthetic arithmetic; it is not a host-parity comparison.
+`rules_reference` distinguishes the `SimplifiedModel` calculator records from the synthetic
+interaction record, checks content/build/mode applicability, units, ordered steps, rounding,
+targeting, stacking, expiry, and bounded ID/mechanic/entity lookup. Every unmodeled family and
+compound query returns an explicit unsupported result. The interaction fixture is project-owned
+synthetic arithmetic; it is not a host-parity comparison.
+
+`rules_reference_coverage` recomputes the coverage rows and the entity index from record metadata,
+and fails when a family slice, entity list, or `unmodeled` inventory drifts from the catalog. A
+family or entity lookup must return the result kind the metadata requires, and each entity's bounded
+result set must equal every record that names it, so a dropped or shortened index entry fails
+instead of passing with no matches. It separates `SimplifiedModel`/`Conditional` estimates from
+`Confirmed`/`Supported` synthetic records, asserts that every confirmed record disclaims host parity
+and is reproduced by a declared project-owned fixture, and verifies declared ordering and
+rounding under interacting modifiers: add-before-multiply, multiply-before-add, floor, ceiling, and
+half-up each settle different values for the same inputs. Fixtures that exceed declared coverage
+(division by an undeclared zero, more picks than offered) evaluate to no value, and unsupported
+families, unknown entities, unknown rule references, compound queries, and excluded combinations
+return explicit `Unsupported`/`Conditional` results rather than a number. These tests establish the
+declared pure arithmetic and metadata only; they do not compare against a game host.
 
 Card regression tests check foreign actor/session, wrong phase, validation precedence, bounded
 unique hand-instance identity, missing/changed cards, resource revalidation, and changed facts under

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 
 use sts2_game_core::{
-    CardSpec, CardTarget, CombatCalculationState, EnemyFacts, EntityKind, EntityReference,
-    EvidenceStatus, ExpiryRule, GameMode, MAX_RULE_MATCHES, RoundingRule, RuleCollectionLookup,
+    BLOCK_EXPIRY_CLAMPED_FIXTURE, BLOCK_EXPIRY_FIXTURE, CardSpec, CardTarget,
+    CombatCalculationState, EnemyFacts, EntityKind, EntityReference, EvidenceStatus, ExpiryRule,
+    FixtureClass, GameMode, MAX_RULE_MATCHES, ORDERED_FIXTURES, RoundingRule, RuleCollectionLookup,
     RuleCoverageStatus, RuleFamily, RuleId, RuleLookup, RuleQuery, RuleStepKind, RuleSupport,
     SYNTHETIC_MODIFIER_FIXTURE, SourceStatus, StackRule, TargetDomain, TargetingRule, coverage_for,
-    coverage_inventory, exact_card_damage, lookup_rules, rules_for, rules_for_entity,
-    rules_for_mechanic,
+    coverage_inventory, exact_card_damage, lookup_rules, rule_inventory, rules_for,
+    rules_for_entity, rules_for_mechanic,
 };
 
 #[test]
@@ -35,14 +36,69 @@ fn documented_calculators_are_never_promoted_to_host_parity() {
 }
 
 #[test]
-fn unmodeled_families_are_explicitly_unsupported() {
-    assert!(matches!(
-        RuleFamily::Heal.lookup(),
-        RuleLookup::Unsupported { .. }
-    ));
+fn project_owned_fixtures_reproduce_their_declared_expectations() {
+    assert!(!ORDERED_FIXTURES.is_empty());
+    for fixture in ORDERED_FIXTURES {
+        assert!(
+            matches!(rules_for(fixture.rule), RuleLookup::Found(_)),
+            "{:?} fixture names no record",
+            fixture.rule
+        );
+        assert_eq!(fixture.class, FixtureClass::ConfirmedSyntheticRule);
+        assert!(
+            fixture.matches_expected(),
+            "{:?} fixture does not reproduce its declared value",
+            fixture.rule
+        );
+    }
+}
+
+#[test]
+fn confirmed_records_are_backed_by_a_project_owned_fixture() {
+    let mut confirmed = 0;
+    for rule in rule_inventory() {
+        if rule.evidence != EvidenceStatus::Confirmed {
+            continue;
+        }
+        confirmed += 1;
+        assert_eq!(rule.support, RuleSupport::Supported, "{:?}", rule.id);
+        assert!(
+            ORDERED_FIXTURES
+                .iter()
+                .any(|fixture| fixture.rule == rule.id),
+            "{:?} claims a project-owned fixture that is not declared",
+            rule.id
+        );
+    }
+    assert_eq!(confirmed, 11);
+}
+
+#[test]
+fn declared_block_expiry_settles_the_remaining_block_at_zero() {
+    assert_eq!(BLOCK_EXPIRY_FIXTURE.rule, RuleId::BlockExpiryAtTurnStart);
+    assert!(BLOCK_EXPIRY_FIXTURE.matches_expected());
+    assert_eq!(BLOCK_EXPIRY_FIXTURE.evaluate(), Some(5 - 3));
+    assert!(BLOCK_EXPIRY_CLAMPED_FIXTURE.matches_expected());
+    assert_eq!(
+        BLOCK_EXPIRY_CLAMPED_FIXTURE.evaluate(),
+        Some(2_u64.saturating_sub(5))
+    );
+    assert_eq!(BLOCK_EXPIRY_CLAMPED_FIXTURE.evaluate(), Some(0));
+}
+
+#[test]
+fn unmodeled_family_and_unknown_entity_queries_are_explicitly_unsupported() {
     assert!(matches!(
         RuleFamily::EntityInteraction.lookup(),
         RuleLookup::Unsupported { .. }
+    ));
+    assert_eq!(
+        coverage_for(RuleFamily::EntityInteraction).status,
+        RuleCoverageStatus::Unmodeled
+    );
+    assert!(matches!(
+        rules_for_mechanic(RuleFamily::EntityInteraction),
+        RuleCollectionLookup::Unsupported { .. }
     ));
     for family in [
         RuleFamily::Heal,
@@ -56,11 +112,8 @@ fn unmodeled_families_are_explicitly_unsupported() {
         RuleFamily::PotionInteraction,
         RuleFamily::StatusInteraction,
     ] {
-        assert_eq!(coverage_for(family).status, RuleCoverageStatus::Unmodeled);
-        assert!(matches!(
-            rules_for_mechanic(family),
-            RuleCollectionLookup::Unsupported { .. }
-        ));
+        assert_eq!(coverage_for(family).status, RuleCoverageStatus::Partial);
+        assert!(rules_for_mechanic(family).matches().is_some());
     }
 }
 
