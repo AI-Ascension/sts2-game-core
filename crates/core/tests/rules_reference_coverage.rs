@@ -42,17 +42,24 @@ fn record_entities() -> Vec<EntityReference<'static>> {
     entities
 }
 
-/// Returns the bounded matches of a lookup that metadata says must carry records.
-fn required_matches(lookup: RuleCollectionLookup, label: &str) -> RuleMatches {
-    assert!(
-        !matches!(lookup, RuleCollectionLookup::Unsupported { .. }),
-        "{label} produced no matches"
+/// Returns the bounded matches of a lookup, asserting the variant record metadata requires.
+///
+/// A non-empty set is `Found` only when every expected record is `Supported` and its family
+/// declares no unmodeled combination, and an empty set must be `Unsupported`.
+fn required_matches(
+    lookup: RuleCollectionLookup,
+    expected: &[RuleReference],
+    label: &str,
+) -> RuleMatches {
+    let conditional = expected.iter().any(|rule| {
+        rule.support != RuleSupport::Supported || !unmodeled_combinations(rule.family).is_empty()
+    });
+    assert_eq!(
+        (lookup.is_conditional(), lookup.matches().is_some()),
+        (conditional, !expected.is_empty()),
+        "{label} result variant"
     );
-    match lookup {
-        RuleCollectionLookup::Found(matches)
-        | RuleCollectionLookup::Conditional { matches, .. } => matches,
-        RuleCollectionLookup::Unsupported { .. } => RuleMatches { rules: &[] },
-    }
+    lookup.matches().unwrap_or(RuleMatches { rules: &[] })
 }
 
 fn fixture(
@@ -89,23 +96,16 @@ fn coverage_rows_match_the_bounded_catalog() {
             !row.unmodeled.is_empty(),
             "family {family:?} has no exclusions"
         );
-        let lookup = rules_for_mechanic(*family);
-        assert_eq!(
-            matches!(lookup, RuleCollectionLookup::Unsupported { .. }),
-            expected.is_empty(),
-            "family {family:?} result kind disagrees with record metadata"
-        );
         let status = if expected.is_empty() {
             RuleCoverageStatus::Unmodeled
         } else {
             RuleCoverageStatus::Partial
         };
         assert_eq!(row.status, status, "family {family:?}");
-        if !expected.is_empty() {
-            let matches = required_matches(lookup, &format!("family {family:?} mechanic lookup"));
-            assert_eq!(matches.len(), expected.len(), "family {family:?}");
-            assert!(matches.len() <= MAX_RULE_MATCHES);
-        }
+        let lookup = rules_for_mechanic(*family);
+        let matches = required_matches(lookup, &expected, &format!("family {family:?}"));
+        assert_eq!(matches.len(), expected.len(), "family {family:?}");
+        assert!(matches.len() <= MAX_RULE_MATCHES);
     }
     let ids: Vec<RuleId> = rule_inventory().iter().map(|rule| rule.id).collect();
     for (position, id) in ids.iter().enumerate() {
@@ -120,32 +120,32 @@ fn entity_lookup_is_bounded_and_matches_record_metadata() {
             kind: EntityKind::Rule,
             id: rule.id.as_str(),
         });
-        let matches = required_matches(by_rule, &format!("rule reference {:?}", rule.id));
+        let expected = std::slice::from_ref(rule);
+        let matches = required_matches(by_rule, expected, &format!("rule {:?}", rule.id));
         assert_eq!(matches.len(), 1, "rule reference {:?}", rule.id);
         assert_eq!(matches.as_slice()[0].id, rule.id);
     }
     let entities = record_entities();
     assert!(!entities.is_empty(), "no record names an entity reference");
     for entity in entities {
-        let mut expected: Vec<&str> = rule_inventory()
+        let expected: Vec<RuleReference> = rule_inventory()
             .iter()
+            .copied()
             .filter(|rule| rule.entities.contains(&entity))
-            .map(|rule| rule.id.as_str())
             .collect();
         assert!(!expected.is_empty(), "entity {entity:?} names no record");
-        let by_entity = required_matches(
-            rules_for_entity(entity),
-            &format!("entity {entity:?} lookup"),
-        );
+        let label = format!("entity {entity:?}");
+        let by_entity = required_matches(rules_for_entity(entity), &expected, &label);
         let mut found: Vec<&str> = by_entity
-            .as_slice()
+            .rules
             .iter()
             .map(|rule| rule.id.as_str())
             .collect();
-        expected.sort_unstable();
+        let mut ids: Vec<&str> = expected.iter().map(|rule| rule.id.as_str()).collect();
+        ids.sort_unstable();
         found.sort_unstable();
         assert_eq!(
-            found, expected,
+            found, ids,
             "entity {entity:?} index disagrees with record metadata"
         );
         assert!(by_entity.len() <= MAX_RULE_MATCHES);
@@ -321,13 +321,13 @@ fn out_of_coverage_requests_never_produce_a_number() {
         rules_for_mechanic(RuleFamily::EntityInteraction),
         RuleCollectionLookup::Unsupported { .. }
     ));
-    let conditional = lookup_rules(RuleQuery::by_id(RuleId::RewardChoicePicks));
-    let RuleCollectionLookup::Conditional { matches, reason } = conditional else {
-        return;
-    };
+    let lookup = lookup_rules(RuleQuery::by_id(RuleId::RewardChoicePicks));
+    let expected = coverage_for(RuleFamily::Acquisition).rules;
+    let matches = required_matches(lookup, expected, "reward choice picks");
     assert_eq!(matches.len(), 1);
+    assert_eq!(matches.as_slice()[0].id, RuleId::RewardChoicePicks);
     assert_eq!(
-        reason,
+        lookup.reason(),
         "Only the bounded pick count is declared; the offered set, rarity weighting, and card identity are unmodeled and must not be inferred."
     );
     for family in coverage_inventory() {
