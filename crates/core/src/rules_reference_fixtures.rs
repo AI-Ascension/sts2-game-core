@@ -7,6 +7,9 @@
 //! [`FixtureClass::ConfirmedSyntheticRule`] fixtures confirm one declared ordered arithmetic against
 //! an independently written expected value. Anything outside the declared coverage evaluates to
 //! `None` instead of an exact-looking number.
+//!
+//! Every ordered fixture is listed in [`ORDERED_FIXTURES`], so the evidence behind a confirmed
+//! record can be recomputed as a set instead of being asserted one constant at a time.
 
 use super::rules_reference_ids::RuleId;
 use super::rules_reference_vocab::RoundingRule;
@@ -226,6 +229,22 @@ pub const ENERGY_CAP_FIXTURE: OrderedFixture = OrderedFixture {
     expected: Some(3),
 };
 
+pub const BLOCK_EXPIRY_FIXTURE: OrderedFixture = OrderedFixture {
+    rule: RuleId::BlockExpiryAtTurnStart,
+    class: FixtureClass::ConfirmedSyntheticRule,
+    start: 5,
+    ops: &[FixtureOp::SaturatingSubtract(3)],
+    expected: Some(2),
+};
+
+pub const BLOCK_EXPIRY_CLAMPED_FIXTURE: OrderedFixture = OrderedFixture {
+    rule: RuleId::BlockExpiryAtTurnStart,
+    class: FixtureClass::ConfirmedSyntheticRule,
+    start: 2,
+    ops: &[FixtureOp::SaturatingSubtract(5)],
+    expected: Some(0),
+};
+
 pub const POTION_CONSUMPTION_FIXTURE: OrderedFixture = OrderedFixture {
     rule: RuleId::PotionConsumptionBudget,
     class: FixtureClass::ConfirmedSyntheticRule,
@@ -277,3 +296,23 @@ pub const REWARD_CHOICE_OUT_OF_COVERAGE_FIXTURE: OrderedFixture = OrderedFixture
     ops: &[FixtureOp::RequireAtMost(3)],
     expected: None,
 };
+
+/// Every deterministic ordered fixture owned by this module.
+pub const ORDERED_FIXTURES: &[OrderedFixture] = &[
+    CARD_MULTI_HIT_ORDERING_FIXTURE,
+    RELIC_FLAT_BONUS_ORDERING_FIXTURE,
+    SATURATING_HEAL_FIXTURE,
+    DRAW_TO_HAND_SIZE_FIXTURE,
+    DRAW_WITH_FULL_HAND_FIXTURE,
+    EXHAUST_ZONE_MOVE_FIXTURE,
+    START_OF_TURN_ENERGY_FIXTURE,
+    ENERGY_CAP_FIXTURE,
+    BLOCK_EXPIRY_FIXTURE,
+    BLOCK_EXPIRY_CLAMPED_FIXTURE,
+    POTION_CONSUMPTION_FIXTURE,
+    ASCENSION_ENEMY_HP_FIXTURE,
+    COOP_ENEMY_HP_FIXTURE,
+    STATUS_VULNERABLE_FIXTURE,
+    REWARD_CHOICE_FIXTURE,
+    REWARD_CHOICE_OUT_OF_COVERAGE_FIXTURE,
+];

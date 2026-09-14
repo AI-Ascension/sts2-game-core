@@ -3,17 +3,18 @@
 //! Coverage tests for the broadened rules-reference inventory.
 
 use sts2_game_core::{
-    ASCENSION_ENEMY_HP_FIXTURE, CARD_MULTI_HIT_ORDERING_FIXTURE, COOP_ENEMY_HP_FIXTURE, CardSpec,
-    CardTarget, CombatCalculationState, DRAW_TO_HAND_SIZE_FIXTURE, DRAW_WITH_FULL_HAND_FIXTURE,
+    ASCENSION_ENEMY_HP_FIXTURE, BLOCK_EXPIRY_CLAMPED_FIXTURE, BLOCK_EXPIRY_FIXTURE,
+    CARD_MULTI_HIT_ORDERING_FIXTURE, COOP_ENEMY_HP_FIXTURE, CardSpec, CardTarget,
+    CombatCalculationState, DRAW_TO_HAND_SIZE_FIXTURE, DRAW_WITH_FULL_HAND_FIXTURE,
     ENERGY_CAP_FIXTURE, EXHAUST_ZONE_MOVE_FIXTURE, EnemyFacts, EntityKind, EntityReference,
     EvidenceStatus, FixtureClass, FixtureOp, MAX_RULE_MATCHES, OrderedFixture,
     POTION_CONSUMPTION_FIXTURE, RELIC_FLAT_BONUS_ORDERING_FIXTURE, REWARD_CHOICE_FIXTURE,
     REWARD_CHOICE_OUT_OF_COVERAGE_FIXTURE, RuleCollectionLookup, RuleCoverageStatus, RuleFamily,
-    RuleId, RuleLookup, RuleQuery, RuleReference, RuleSupport, SATURATING_HEAL_FIXTURE,
-    SIMPLIFIED_NOMINAL_DAMAGE_FIXTURE, START_OF_TURN_ENERGY_FIXTURE, STATUS_VULNERABLE_FIXTURE,
-    SourceStatus, TargetDomain, coverage_for, coverage_inventory, exact_card_damage, lookup_rules,
-    rule_inventory, rules_for, rules_for_entity, rules_for_mechanic, unmodeled_combinations,
-    unmodeled_for,
+    RuleId, RuleLookup, RuleMatches, RuleQuery, RuleReference, RuleSupport,
+    SATURATING_HEAL_FIXTURE, SIMPLIFIED_NOMINAL_DAMAGE_FIXTURE, START_OF_TURN_ENERGY_FIXTURE,
+    STATUS_VULNERABLE_FIXTURE, SourceStatus, TargetDomain, coverage_for, coverage_inventory,
+    exact_card_damage, lookup_rules, rule_inventory, rules_for, rules_for_entity,
+    rules_for_mechanic, unmodeled_combinations, unmodeled_for,
 };
 
 const FLOOR_BY_ZERO: &[FixtureOp] = &[FixtureOp::FloorDivide(0)];
@@ -26,6 +27,32 @@ fn catalog_family(family: RuleFamily) -> Vec<RuleReference> {
         .copied()
         .filter(|rule| rule.family == family)
         .collect()
+}
+
+/// Every entity reference named by at least one record, derived from record metadata only.
+fn record_entities() -> Vec<EntityReference<'static>> {
+    let mut entities = Vec::new();
+    for rule in rule_inventory() {
+        for entity in rule.entities {
+            if !entities.contains(entity) {
+                entities.push(*entity);
+            }
+        }
+    }
+    entities
+}
+
+/// Returns the bounded matches of a lookup that metadata says must carry records.
+fn required_matches(lookup: RuleCollectionLookup, label: &str) -> RuleMatches {
+    assert!(
+        !matches!(lookup, RuleCollectionLookup::Unsupported { .. }),
+        "{label} produced no matches"
+    );
+    match lookup {
+        RuleCollectionLookup::Found(matches)
+        | RuleCollectionLookup::Conditional { matches, .. } => matches,
+        RuleCollectionLookup::Unsupported { .. } => RuleMatches { rules: &[] },
+    }
 }
 
 fn fixture(
@@ -63,14 +90,19 @@ fn coverage_rows_match_the_bounded_catalog() {
             "family {family:?} has no exclusions"
         );
         let lookup = rules_for_mechanic(*family);
-        if expected.is_empty() {
-            assert_eq!(row.status, RuleCoverageStatus::Unmodeled);
-            assert!(matches!(lookup, RuleCollectionLookup::Unsupported { .. }));
+        assert_eq!(
+            matches!(lookup, RuleCollectionLookup::Unsupported { .. }),
+            expected.is_empty(),
+            "family {family:?} result kind disagrees with record metadata"
+        );
+        let status = if expected.is_empty() {
+            RuleCoverageStatus::Unmodeled
         } else {
-            assert_eq!(row.status, RuleCoverageStatus::Partial);
-            let Some(matches) = lookup.matches() else {
-                return;
-            };
+            RuleCoverageStatus::Partial
+        };
+        assert_eq!(row.status, status, "family {family:?}");
+        if !expected.is_empty() {
+            let matches = required_matches(lookup, &format!("family {family:?} mechanic lookup"));
             assert_eq!(matches.len(), expected.len(), "family {family:?}");
             assert!(matches.len() <= MAX_RULE_MATCHES);
         }
@@ -88,25 +120,35 @@ fn entity_lookup_is_bounded_and_matches_record_metadata() {
             kind: EntityKind::Rule,
             id: rule.id.as_str(),
         });
-        let Some(matches) = by_rule.matches() else {
-            return;
-        };
+        let matches = required_matches(by_rule, &format!("rule reference {:?}", rule.id));
         assert_eq!(matches.len(), 1, "rule reference {:?}", rule.id);
         assert_eq!(matches.as_slice()[0].id, rule.id);
-        for entity in rule.entities {
-            let Some(by_entity) = rules_for_entity(*entity).matches() else {
-                return;
-            };
-            assert!(
-                by_entity
-                    .as_slice()
-                    .iter()
-                    .any(|candidate| candidate.id == rule.id),
-                "entity {entity:?} omits {:?}",
-                rule.id
-            );
-            assert!(by_entity.len() <= MAX_RULE_MATCHES);
-        }
+    }
+    let entities = record_entities();
+    assert!(!entities.is_empty(), "no record names an entity reference");
+    for entity in entities {
+        let mut expected: Vec<&str> = rule_inventory()
+            .iter()
+            .filter(|rule| rule.entities.contains(&entity))
+            .map(|rule| rule.id.as_str())
+            .collect();
+        assert!(!expected.is_empty(), "entity {entity:?} names no record");
+        let by_entity = required_matches(
+            rules_for_entity(entity),
+            &format!("entity {entity:?} lookup"),
+        );
+        let mut found: Vec<&str> = by_entity
+            .as_slice()
+            .iter()
+            .map(|rule| rule.id.as_str())
+            .collect();
+        expected.sort_unstable();
+        found.sort_unstable();
+        assert_eq!(
+            found, expected,
+            "entity {entity:?} index disagrees with record metadata"
+        );
+        assert!(by_entity.len() <= MAX_RULE_MATCHES);
     }
     assert!(matches!(
         rules_for_entity(EntityReference {
@@ -234,6 +276,8 @@ fn declared_rounding_policies_change_the_settled_value() {
         EXHAUST_ZONE_MOVE_FIXTURE,
         START_OF_TURN_ENERGY_FIXTURE,
         ENERGY_CAP_FIXTURE,
+        BLOCK_EXPIRY_FIXTURE,
+        BLOCK_EXPIRY_CLAMPED_FIXTURE,
         POTION_CONSUMPTION_FIXTURE,
         ASCENSION_ENEMY_HP_FIXTURE,
         COOP_ENEMY_HP_FIXTURE,
@@ -247,6 +291,8 @@ fn declared_rounding_policies_change_the_settled_value() {
     );
     assert_eq!(DRAW_WITH_FULL_HAND_FIXTURE.evaluate(), Some(0));
     assert_eq!(ENERGY_CAP_FIXTURE.evaluate(), Some(3));
+    assert_eq!(BLOCK_EXPIRY_FIXTURE.evaluate(), Some(5 - 3));
+    assert_eq!(BLOCK_EXPIRY_CLAMPED_FIXTURE.evaluate(), Some(0));
     assert_eq!(STATUS_VULNERABLE_FIXTURE.evaluate(), Some(7 * 3 / 2));
 }
 

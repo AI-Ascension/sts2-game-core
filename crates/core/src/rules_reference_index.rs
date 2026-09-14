@@ -3,8 +3,9 @@
 //! Explicit entity index for bounded rules-reference lookup.
 //!
 //! The index is deliberately written out rather than derived so that one entity key maps to one
-//! bounded, reviewable record set. `catalog_consistency` tests compare it with the record metadata,
-//! so a record whose `entities` list changes without the index being updated fails validation.
+//! bounded, reviewable record set. `entity_lookup_is_bounded_and_matches_record_metadata` recomputes
+//! it from record metadata, so a record whose `entities` list changes without the index being
+//! updated fails validation.
 
 use super::rules_reference::RuleReference;
 use super::rules_reference_records_combat::{

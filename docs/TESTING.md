@@ -56,9 +56,12 @@ compound query returns an explicit unsupported result. The interaction fixture i
 synthetic arithmetic; it is not a host-parity comparison.
 
 `rules_reference_coverage` recomputes the coverage rows and the entity index from record metadata,
-and fails when a family slice, entity list, or `unmodeled` inventory drifts from the catalog. It
-separates `SimplifiedModel`/`Conditional` estimates from `Confirmed`/`Supported` synthetic records,
-asserts that every confirmed record disclaims host parity, and verifies declared ordering and
+and fails when a family slice, entity list, or `unmodeled` inventory drifts from the catalog. A
+family or entity lookup must return the result kind the metadata requires, and each entity's bounded
+result set must equal every record that names it, so a dropped or shortened index entry fails
+instead of passing with no matches. It separates `SimplifiedModel`/`Conditional` estimates from
+`Confirmed`/`Supported` synthetic records, asserts that every confirmed record disclaims host parity
+and is reproduced by a declared project-owned fixture, and verifies declared ordering and
 rounding under interacting modifiers: add-before-multiply, multiply-before-add, floor, ceiling, and
 half-up each settle different values for the same inputs. Fixtures that exceed declared coverage
 (division by an undeclared zero, more picks than offered) evaluate to no value, and unsupported

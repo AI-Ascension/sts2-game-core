@@ -59,6 +59,10 @@ Semantic Versioning once versioned releases begin.
 
 ### Fixed
 
+- Back every `Confirmed` rules-reference record with a declared project-owned fixture: add
+  deterministic block-expiry fixtures with clamp assertions, require each confirmed record to be
+  reproduced by the fixture inventory, and make family/entity coverage tests fail when a lookup
+  returns no matches instead of passing silently.
 - Preserve the complete protocol-owner POC artifact package and checksum inventory, including
   source-schema and conformance mirrors, while leaving the original eight payloads unchanged.
 - Safety correction: exclude defeated enemies from card-action targeting and all-enemy arithmetic;

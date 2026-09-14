@@ -33,6 +33,10 @@ Two evidence classes are deliberately distinguishable:
   means the named target-local fixture reproduces the pure declared arithmetic; it is never a host
   comparison. No record uses `SourceStatus::NativeComparison`.
 
+Every fixture is listed in `ORDERED_FIXTURES`, and a coverage test requires every `Confirmed` record
+to be reproduced by at least one declared fixture, so a record cannot cite evidence that was never
+written.
+
 ## Lookup, exclusions, and compatibility
 
 Exact IDs use `rules_for`. `rules_for_mechanic`, `rules_for_entity` (card/relic/potion/status/
