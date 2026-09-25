@@ -12,6 +12,14 @@ Semantic Versioning once versioned releases begin.
 ### Added
 
 - Target-local repository governance and contributor guidance.
+
+- Denied `rustdoc::private_intra_doc_links` and `rustdoc::redundant_explicit_links` in the
+  `Check documentation links` step, alongside `broken_intra_doc_links`. Both are warn-by-default, so
+  the previous command exited 0 while printing a warning about a link that is broken for every reader
+  who is not passing `--document-private-items` — a class the always-passed flag can never surface.
+  No link is broken at this revision and no source file changed; the three-lint command exits 0 with
+  zero warnings on the unmodified tree and exits 101 when a link from the public `exact_card_damage`
+  to the private `validate_target` is added, where the previous command exits 0 with one warning.
 - Core-specific architecture, product, compatibility, testing, licensing, workflow, and policy docs.
 - A Rust-only governance workspace with a strict repository-policy checker.
 - A non-empty `sts2-game-core` package with typed identity, generation, state, action, and pure
