@@ -339,7 +339,7 @@ fn out_of_coverage_requests_never_produce_a_number() {
     assert_eq!(matches.as_slice()[0].id, RuleId::RewardChoicePicks);
     assert_eq!(
         lookup.reason(),
-        "Only the bounded pick count is declared; the offered set, rarity weighting, and card identity are unmodeled and must not be inferred."
+        "Only the bounded pick count is declared. The identity and host-supplied attributes of the host-chosen offered entries are modeled as pure typed data, but they describe what the host already chose; generation weights, rerolls, and undisclosed outcomes stay unmodeled and must not be inferred."
     );
     for family in coverage_inventory() {
         let exclusions = unmodeled_combinations(*family);

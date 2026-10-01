@@ -85,7 +85,7 @@ pub(crate) const FAMILY_COVERAGE: &[RuleFamilyCoverage] = &[
         RuleFamily::Acquisition,
         RuleCoverageStatus::Partial,
         index::ACQUISITION_RULES,
-        "offered-set generation, rarity weighting, skips, and rerolls",
+        "offered-set generation weights, rerolls, and undisclosed outcomes",
     ),
     coverage(
         RuleFamily::DifficultyScaling,
@@ -203,8 +203,8 @@ pub(crate) const UNMODELED_COMBINATIONS: &[UnmodeledCombination] = &[
     exclusion(
         RuleFamily::Acquisition,
         &[RuleId::RewardChoicePicks],
-        "reward choice combined with offered-set generation or rerolls",
-        "the offered set is unmodeled, so no identity or rarity is inferred",
+        "reward choice combined with offered-set generation weights, rerolls, or undisclosed outcomes",
+        "the identity and host-supplied attributes of host-chosen offered entries are modeled, but generation weights, rerolls, and undisclosed outcomes are not, and no probability is inferred",
     ),
     exclusion(
         RuleFamily::DifficultyScaling,

@@ -70,11 +70,11 @@ pub(crate) const REWARD_CHOICE_PICKS: RuleReference = reference(
         SourceStatus::Synthetic,
         SYNTHETIC_SOURCE,
         RuleSupport::Conditional,
-        "Only the bounded pick count is declared; the offered set, rarity weighting, and card identity are unmodeled and must not be inferred.",
+        "Only the bounded pick count is declared. The identity and host-supplied attributes of the host-chosen offered entries are modeled as pure typed data, but they describe what the host already chose; generation weights, rerolls, and undisclosed outcomes stay unmodeled and must not be inferred.",
         &[
-            "offered-set generation and rarity weighting",
+            "offered-set generation weights and reroll rates",
             "skips, rerolls, and gold-based alternatives",
-            "card identity and deck placement",
+            "undisclosed offered entries and their attributes",
         ],
     ),
 );
