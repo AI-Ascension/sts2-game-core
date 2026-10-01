@@ -16,6 +16,8 @@ mod rules_reference_fixtures;
 mod rules_reference_ids;
 mod rules_reference_index;
 mod rules_reference_lookup;
+mod rules_reference_offered;
+mod rules_reference_offered_validation;
 mod rules_reference_query;
 mod rules_reference_records;
 mod rules_reference_records_combat;
@@ -68,6 +70,14 @@ pub use rules_reference_ids::RuleId;
 pub use rules_reference_lookup::{
     coverage_for, coverage_inventory, lookup, lookup_rules, rule_inventory, rules_for,
     rules_for_entity, rules_for_mechanic, unmodeled_combinations, unmodeled_for,
+};
+pub use rules_reference_offered::{
+    MAX_OFFERED_ATTRIBUTE_BYTES, OfferedAttribute, OfferedAttributeName, OfferedEntry,
+    OfferedEntryIdentity, OfferedEntryKind,
+};
+pub use rules_reference_offered_validation::{
+    OfferedSetError, count_fully_described, offered_entry, validate_offered_entry,
+    validate_offered_set,
 };
 pub use rules_reference_query::{
     RuleCollectionLookup, RuleCoverageStatus, RuleFamilyCoverage, RuleLookup, RuleMatches,
