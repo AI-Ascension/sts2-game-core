@@ -19,8 +19,16 @@ use super::rules_reference_vocab::RuleUnit;
 
 /// Largest offered-entry attribute length this module accepts.
 ///
-/// The bound matches the harness description bound, so one admitted offered entry is carried
-/// without truncation or a second account of the same text.
+/// This reuses the harness `MAX_DESCRIPTION_BYTES` value (240) so an admitted
+/// attribute is never truncated against the harness's own limit. The two bounds
+/// are not equivalent, though, and the difference is deliberate rather than
+/// accidental: the harness constant bounds the WHOLE composed phrase for one
+/// entry (name, upgraded marker, cost, rarity and description together), while
+/// this constant bounds EACH attribute independently. Three attributes can
+/// therefore each reach 240 here even though no single harness entry could.
+/// This is a safe over-estimate — it refuses less, never more — and it is stated
+/// explicitly so a future reader does not mistake the shared number for a shared
+/// accounting.
 pub const MAX_OFFERED_ATTRIBUTE_BYTES: usize = 240;
 
 /// One offered-entry attribute, either as the host supplied it or as undisclosed.

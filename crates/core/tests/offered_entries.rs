@@ -210,6 +210,11 @@ fn the_acquisition_exclusion_is_narrowed_to_generation_policy_only() {
     assert_eq!(row.status, sts2_game_core::RuleCoverageStatus::Partial);
     assert!(row.unmodeled.contains("generation weights"));
     assert!(row.unmodeled.contains("rerolls"));
+    // The row's third leg — undisclosed outcomes — is asserted here as well as
+    // on the exclusion and the record. Without this assertion the row's claim is
+    // only half-pinned: dropping "undisclosed outcomes" from the row string
+    // would leave every other assertion green.
+    assert!(row.unmodeled.contains("undisclosed outcomes"));
     assert!(!row.unmodeled.contains("rarity weighting"));
 
     // The record's own unmodeled list excludes generation policy and undisclosed entries, and no
