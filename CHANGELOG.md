@@ -47,6 +47,9 @@ Semantic Versioning once versioned releases begin.
 
 ### Changed
 
+- Reconcile the compatibility baseline with rules-reference inventory v2 and its explicit
+  exclusions; preserve the distinction between synthetic arithmetic and host-parity evidence.
+
 - The semantic seam now demonstrates one checked state transition while preserving the host-free
   boundary; no protocol implementation path dependency was added.
 - The Runtime-v2 combat seam is additive to the existing POC API and keeps operation idempotency,

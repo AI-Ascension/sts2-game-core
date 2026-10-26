@@ -14,7 +14,7 @@ HTTP route, MCP tool, gateway process, provider, save format, or another harness
 | Repository foundation | Unreleased target preparation | Confirmed static structure only |
 | Core domain contract | Unreleased package v0.0.0; deterministic `use_budget`, frozen `end_turn`, and checked Runtime-v2 projection seams | Confirmed by deterministic unit/integration tests; not a frozen game contract |
 | Observation calculators | Unreleased pure card-play, exact-fact, and explicit-belief modules | Confirmed by host-independent tests; rules outside supplied facts and target-build behavior unverified |
-| Rules reference | Inventory v1; simplified calculator records plus one synthetic interaction fixture | Confirmed metadata/synthetic arithmetic only; no native or host-parity evidence |
+| Rules reference | Inventory v2; bounded family/entity/rule lookup, ordered arithmetic fixtures, and explicit unmodeled combinations | Confirmed metadata/synthetic arithmetic only; no native or host-parity evidence |
 | POC artifact mapping | `sts2-protocol/poc-v1` and its recorded schema digest | Confirmed local manifest/schema/fixture presence; no protocol implementation or runtime claim |
 | Game host/runtime | Not owned by this target | Unverified here; mod-owned evidence required |
 
@@ -27,6 +27,14 @@ in an observation but is not an action target, all-enemy arithmetic counts only 
 zero maximum HP is malformed. Consumers of the pure calculator must refresh a terminal observation
 rather than issue an action against a defeated target. This is not a wire, host, or terminal-runtime
 compatibility claim.
+
+The rules-reference inventory version is `RULES_REFERENCE_VERSION = 2`, as recorded in
+[ADR 0008](decisions/0008-rule-family-coverage-and-exclusions.md). `Confirmed` records establish
+only their declared synthetic arithmetic; they do not establish shipped-game rules. Conditional
+and unsupported results retain their exclusions. The inventory version is a core-owned semantic
+version, not a negotiated protocol profile or proof of gateway/MCP delivery. Authoritative inputs,
+independent expected outputs, pinned host comparisons, and complete agent delivery remain separate
+acceptance requirements for issue #13.
 The checked Runtime-v2 projection rejects turn indices above 1024 and generations above
 `9_007_199_254_740_991`; it is a representational guard, not a protocol serialization or host
 compatibility guarantee.
